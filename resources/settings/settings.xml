@@ -1,0 +1,41 @@
+<settings>
+ 	<setting propertyKey="@Properties.totalDistance" title="@Strings.TotalDistance">
+		<settingConfig type="numeric" min="0"/>
+	</setting>	
+	
+    <setting propertyKey="@Properties.totalDistanceYear" title="@Strings.TotalDistanceYear">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+    <setting propertyKey="@Properties.totalDistanceMonth" title="@Strings.TotalDistanceMonth">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+    <setting propertyKey="@Properties.totalDistanceWeek" title="@Strings.TotalDistanceWeek">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+    <setting propertyKey="@Properties.totalDistanceRide" title="@Strings.TotalDistanceRide">
+        <settingConfig type="numeric" />
+    </setting>
+
+    <setting propertyKey="@Properties.totalDistanceLastYear" title="@Strings.TotalDistanceLastYear">
+		<settingConfig type="numeric" min="0"/>
+	</setting>	
+    <setting propertyKey="@Properties.totalDistanceLastMonth" title="@Strings.TotalDistanceLastMonth">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+
+    <setting propertyKey="@Properties.totalDistanceLastWeek" title="@Strings.TotalDistanceLastWeek">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+
+    <setting propertyKey="@Properties.totalDistanceLastRide" title="@Strings.TotalDistanceLastRide">
+        <settingConfig type="numeric" />
+    </setting>	
+
+    <setting propertyKey="@Properties.showColors" title="@Strings.ShowColors">
+        <settingConfig type="boolean" />
+    </setting>	
+
+    <setting propertyKey="@Properties.showValues" title="@Strings.ShowValues">
+        <settingConfig type="boolean" />
+    </setting>	
+</settings>

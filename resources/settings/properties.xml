@@ -1,0 +1,19 @@
+<properties>
+	<property id="totalDistance" type="number">0</property>
+
+	<property id="totalDistanceLastYear" type="number">0</property>
+	<property id="totalDistanceYear" type="number">0</property>
+	
+	<property id="totalDistanceLastMonth" type="number">0</property>		
+	<property id="totalDistanceMonth" type="number">0</property>		
+		
+	<property id="totalDistanceLastWeek" type="number">0</property>		
+	<property id="totalDistanceWeek" type="number">0</property>		
+
+	<property id="totalDistanceLastRide" type="number">0</property>		
+	<property id="totalDistanceRide" type="number">0</property>		
+	
+	<property id="showColors" type="boolean">true</property>		
+	<property id="showValues" type="boolean">true</property>		
+
+</properties>

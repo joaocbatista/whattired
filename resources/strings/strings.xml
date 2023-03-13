@@ -1,0 +1,21 @@
+<strings>
+    <string id="AppName">what tired</string>
+    <string id="AppNameBeta">what tired beta</string>
+
+    <string id="TotalDistance">Set odo (km)</string>
+    
+    <string id="TotalDistanceLastYear">Set total distance last year (km)</string>
+    <string id="TotalDistanceYear">Set total distance current year (km)</string>    
+
+    <string id="TotalDistanceLastMonth">Set total last month (km)</string>
+    <string id="TotalDistanceMonth">Set total current month (km)</string>
+
+    <string id="TotalDistanceLastWeek">Set total last week (km)</string>
+    <string id="TotalDistanceWeek">Set total current week (km)</string>
+
+    <string id="TotalDistanceLastRide">Set total last ride (km)</string>
+    <string id="TotalDistanceRide">Set total current ride (km)</string>
+    
+    <string id="ShowColors">Show percentage in color</string>
+    <string id="ShowValues">Show actual values</string>
+</strings>
