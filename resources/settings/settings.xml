@@ -2,7 +2,10 @@
  	<setting propertyKey="@Properties.totalDistance" title="@Strings.TotalDistance">
 		<settingConfig type="numeric" min="0"/>
 	</setting>	
-	
+	<setting propertyKey="@Properties.maxDistance" title="@Strings.MaxDistance">
+		<settingConfig type="numeric" min="0"/>
+	</setting>	
+
     <setting propertyKey="@Properties.totalDistanceYear" title="@Strings.TotalDistanceYear">
         <settingConfig type="numeric" min="0"/>
     </setting>	
@@ -13,7 +16,7 @@
         <settingConfig type="numeric" min="0"/>
     </setting>	
     <setting propertyKey="@Properties.totalDistanceRide" title="@Strings.TotalDistanceRide">
-        <settingConfig type="numeric" />
+        <settingConfig type="numeric" min="0"/>
     </setting>
 
     <setting propertyKey="@Properties.totalDistanceLastYear" title="@Strings.TotalDistanceLastYear">
@@ -28,7 +31,7 @@
     </setting>	
 
     <setting propertyKey="@Properties.totalDistanceLastRide" title="@Strings.TotalDistanceLastRide">
-        <settingConfig type="numeric" />
+        <settingConfig type="numeric" min="0"/>
     </setting>	
 
     <setting propertyKey="@Properties.showColors" title="@Strings.ShowColors">
@@ -38,4 +41,55 @@
     <setting propertyKey="@Properties.showValues" title="@Strings.ShowValues">
         <settingConfig type="boolean" />
     </setting>	
+
+    <setting propertyKey="@Properties.showColorsSmallField" title="@Strings.ShowColorsSmallField">
+        <settingConfig type="boolean" />
+    </setting>	
+
+    <setting propertyKey="@Properties.showValuesSmallField" title="@Strings.ShowValuesSmallField">
+        <settingConfig type="boolean" />
+    </setting>	
+
+
+    <setting propertyKey="@Properties.triggerFrontTyre" title="@Strings.TriggerFrontTyre">
+        <settingConfig type="alphanumeric" />
+    </setting>
+
+    <setting propertyKey="@Properties.totalDistanceFrontTyre" title="@Strings.TotalDistanceFrontTyre">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+
+    <setting propertyKey="@Properties.maxDistanceFrontTyre" title="@Strings.MaxDistanceFrontTyre">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+
+    <setting propertyKey="@Properties.triggerBackTyre" title="@Strings.TriggerBackTyre">
+        <settingConfig type="alphanumeric" />
+    </setting>
+
+    <setting propertyKey="@Properties.totalDistanceBackTyre" title="@Strings.TotalDistanceBackTyre">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+
+    <setting propertyKey="@Properties.maxDistanceBackTyre" title="@Strings.MaxDistanceBackTyre">
+        <settingConfig type="numeric" min="0"/>
+    </setting>	
+
+    <setting propertyKey="@Properties.showFocusSmallField" title="@Strings.ShowFocusSmallField" prompt="@Strings.ShowFocusSmallField">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.ShowFocusNothing</listEntry>
+            <listEntry value="1">@Strings.ShowFocusOdo</listEntry>            
+            <listEntry value="2">@Strings.ShowFocusYear</listEntry>
+			<listEntry value="3">@Strings.ShowFocusMonth</listEntry>
+			<listEntry value="4">@Strings.ShowFocusWeek</listEntry>
+			<listEntry value="5">@Strings.ShowFocusRide</listEntry>
+			<listEntry value="6">@Strings.ShowFocusFront</listEntry>
+			<listEntry value="7">@Strings.ShowFocusBack</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.showFields" title="@Strings.ShowFields">
+        <settingConfig type="alphanumeric" />
+    </setting>
+
 </settings>

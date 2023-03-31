@@ -1,8 +1,9 @@
 <strings>
-    <string id="AppName">what tired</string>
-    <string id="AppNameBeta">what tired beta</string>
+    <string id="AppName">What tired</string>
+    <string id="AppNameBeta">What tired beta</string>
 
     <string id="TotalDistance">Set odo (km)</string>
+    <string id="MaxDistance">Set max odo (km)</string>
     
     <string id="TotalDistanceLastYear">Set total distance last year (km)</string>
     <string id="TotalDistanceYear">Set total distance current year (km)</string>    
@@ -16,6 +17,28 @@
     <string id="TotalDistanceLastRide">Set total last ride (km)</string>
     <string id="TotalDistanceRide">Set total current ride (km)</string>
     
-    <string id="ShowColors">Show percentage in color</string>
-    <string id="ShowValues">Show actual values</string>
+    <string id="ShowColors">Show color</string>
+    <string id="ShowValues">Show values</string>
+    <string id="ShowColorsSmallField">Show color (small field) </string>
+    <string id="ShowValuesSmallField">Show values (small field)</string>
+
+
+    <string id="TriggerFrontTyre">Activityname trigger reset front</string>
+    <string id="TotalDistanceFrontTyre">Set total front tyre (km)</string>
+    <string id="MaxDistanceFrontTyre">Set max front tyre (km)</string>
+    <string id="TriggerBackTyre">Activityname trigger reset back</string>
+    <string id="TotalDistanceBackTyre">Set total back tyre (km)</string>
+    <string id="MaxDistanceBackTyre">Set max back tyre (km)</string>
+
+    <string id="ShowFocusSmallField">Focus (small field)</string>
+    <string id="ShowFocusNothing">Nope</string>
+    <string id="ShowFocusOdo">Odo</string>
+    <string id="ShowFocusYear">Year</string>
+    <string id="ShowFocusMonth">Month</string>
+    <string id="ShowFocusWeek">Week</string>
+    <string id="ShowFocusRide">Ride</string>
+    <string id="ShowFocusFront">Front</string>
+    <string id="ShowFocusBack">Back</string>    
+
+    <string id="ShowFields">Set fields to display (ORMWYFB)</string>    
 </strings>

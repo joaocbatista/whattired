@@ -1,6 +1,13 @@
-show: y/n
-per tire front / back
-option reset front yes/no
-set max km front tyre 4000
-set max km back tyre 4000
--- quick button press to reset?
+
+Layout show normal data combined with front/back tyre
++ compact if no values + odo/focus larger
+
+act name is front -> after 10 sec, reset front tire
+
+
+reset front/back by change to actprofile front or back
+    - ciq field What Tired need to be active in that profile
+    - beeps for 10 seconds then reset front / back value
+    - switch back to normal profile.
+
+menu to reset front / back
