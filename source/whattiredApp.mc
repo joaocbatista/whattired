@@ -58,15 +58,22 @@ class whattiredApp extends Application.AppBase {
       System.println("Load usersettings");
 
       mTotals.load(true);
-      $.gShowColors = getApplicationProperty("showColors", true) as Boolean;
-      $.gShowValues = getApplicationProperty("showValues", true) as Boolean;
+      $.gShowColors =
+        $.getStorageElseApplicationProperty("showColors", true) as Boolean;
+      $.gShowValues =
+        $.getStorageElseApplicationProperty("showValues", true) as Boolean;
       $.gShowColorsSmallField =
-        getApplicationProperty("showColorsSmallField", true) as Boolean;
+        $.getStorageElseApplicationProperty("showColorsSmallField", true) as
+        Boolean;
       $.gShowValuesSmallField =
-        getApplicationProperty("showValuesSmallField", false) as Boolean;
+        $.getStorageElseApplicationProperty("showValuesSmallField", false) as
+        Boolean;
 
       $.gShowFocusSmallField =
-        getApplicationProperty("showFocusSmallField", 0) as Types.EnumFocus;
+        $.getStorageElseApplicationProperty(
+          "showFocusSmallField",
+          Types.FocusNothing
+        ) as Types.EnumFocus;
 
       var showFields = (
         getApplicationProperty("showFields", "ORMWYFB") as String

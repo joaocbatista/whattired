@@ -1,4 +1,9 @@
-
+menu2
+- set distance values -
+- set max
+- set color
+- text picker restrict numbers only?
+- 
 Layout show normal data combined with front/back tyre
 + compact if no values + odo/focus larger
 

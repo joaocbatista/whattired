@@ -265,16 +265,16 @@ class Totals {
     totalDistance = getDistanceAsMeters("totalDistance");
     maxDistance = getDistanceAsMeters("maxDistance");
 
-    lastYear = getStorageValue("lastYear", 0) as Number;
+    lastYear = $.getStorageValue("lastYear", 0) as Number;
     totalDistanceLastYear = getDistanceAsMeters("totalDistanceLastYear");
-    currentYear = getStorageValue("currentYear", 0) as Number;
+    currentYear = $.getStorageValue("currentYear", 0) as Number;
     totalDistanceYear = getDistanceAsMeters("totalDistanceYear");
 
-    currentMonth = getStorageValue("currentMonth", 0) as Number;
+    currentMonth = $.getStorageValue("currentMonth", 0) as Number;
     totalDistanceLastMonth = getDistanceAsMeters("totalDistanceLastMonth");
     totalDistanceMonth = getDistanceAsMeters("totalDistanceMonth");
 
-    currentWeek = getStorageValue("currentWeek", 0) as Number;
+    currentWeek = $.getStorageValue("currentWeek", 0) as Number;
     totalDistanceLastWeek = getDistanceAsMeters("totalDistanceLastWeek");
     totalDistanceWeek = getDistanceAsMeters("totalDistanceWeek");
 
@@ -377,21 +377,6 @@ class Totals {
     if (firstRide) {
       save();
     }
-  }
-
-  hidden function getStorageValue(
-    key as Application.PropertyKeyType,
-    dflt as Application.PropertyValueType
-  ) as Application.PropertyValueType {
-    try {
-      var val = Toybox.Application.Storage.getValue(key);
-      if (val != null) {
-        return val;
-      }
-    } catch (ex) {
-      return dflt;
-    }
-    return dflt;
   }
 
   hidden function setProperty(

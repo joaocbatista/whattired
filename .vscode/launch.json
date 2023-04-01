@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "monkeyc",
+            "request": "launch",
+            "name": "Run Optimized",
+            "stopAtLaunch": false,
+            "device": "${command:GetTargetDevice}"
+        },
+        {
             "type": "omonkeyc",
             "request": "launch",
             "name": "Run Optimized",
