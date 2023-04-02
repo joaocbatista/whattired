@@ -187,6 +187,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
 class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
   private var _currentDistanceField as String = "";
+  private var _currentPrompt as String = "";
   private var _currentMenuItem as MenuItem?;
   private var _debug as Boolean = false;
 
@@ -198,6 +199,7 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
   public function onSelect(item as MenuItem) as Void {
     _currentDistanceField = item.getId() as String;
     _currentMenuItem = item;
+    _currentPrompt = item.getLabel();
 
     var currentDistanceInKm = (
       ($.getStorageValue(_currentDistanceField, 0.0f) as Float) / 1000
@@ -205,8 +207,10 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
     var view = new $.NumericInputView(
       _debug,
       self,
-      item.getLabel(),
-      currentDistanceInKm
+      _currentPrompt,
+      currentDistanceInKm,
+      null,
+      true
     );
 
     Toybox.WatchUi.pushView(
@@ -233,8 +237,23 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
   }
 
-  public function refreshUi() as Void {
-    WatchUi.requestUpdate();
+  public function onNumericinput(distanceInKm as Float, cursorPos as Number, insert as Boolean) as Void {
+    // Hack to refresh screen
+    WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+    var view = new $.NumericInputView(
+      _debug,
+      self,
+      _currentPrompt,
+      distanceInKm,
+      cursorPos,
+      insert
+    );
+
+    Toybox.WatchUi.pushView(
+      view,
+      new $.NumericInputDelegate(_debug, view, self),
+      WatchUi.SLIDE_IMMEDIATE
+    );
   }
 
   //! Handle the back key being pressed

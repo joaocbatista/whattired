@@ -21,9 +21,7 @@ class NumericInputDelegate extends WatchUi.BehaviorDelegate {
       _view.setDebugInfo("onTap", event.getCoordinates());
     }
     // _view.setClickType(clickEvent.getType());
-    _view.onKeyPressed(event.getCoordinates());
-    _delegate.refreshUi();
-    //WatchUi.requestUpdate();
+    _view.onKeyPressed(event.getCoordinates());   
     return true;
   }
 

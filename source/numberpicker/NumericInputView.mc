@@ -14,7 +14,7 @@ class NumericInputView extends WatchUi.View {
   private var _debug as Boolean = false;
   private var _partialUpdate as Boolean = false;
   private var _debugInfo as String = "";
-  
+
   private var _keyPressed as String = "";
   // private var _coord as Lang.Array<Lang.Number> =
   //   [0, 0] as Lang.Array<Lang.Number>;
@@ -41,17 +41,24 @@ class NumericInputView extends WatchUi.View {
     debug as Boolean,
     delegate as DistanceMenuDelegate,
     prompt as String,
-    value as Float?
+    value as Float?,
+    cursorPos as Number?,
+    insert as Boolean
   ) {
     WatchUi.View.initialize();
     _delegate = delegate;
     _prompt = prompt;
     _debug = debug;
+    _insert = insert;
     // _partialUpdate = !debug;
     if (value != null) {
       _currentValue = value;
-      _cursorPos = _currentValue.format(_valueFormat).length();
       _editData = buildEditedValue(_currentValue, _valueFormat);
+      if (cursorPos == null) {
+        _cursorPos = _currentValue.format(_valueFormat).length();        
+      } else {
+        _cursorPos = cursorPos as Number;
+      }
     }
     _keyCoord = _keyCoord.slice(0, 0);
     _controlCoord = _controlCoord.slice(0, 0);
@@ -108,8 +115,13 @@ class NumericInputView extends WatchUi.View {
     value as Float,
     format as String
   ) as Array<Char> {
-    var stringValue = value.format(format);
-    return stringValue.toCharArray();
+    // if (value == 0.0f && !_keyPressed.equals(".")) {
+    //   var stringValue = value.format("%d");
+    //   return stringValue.toCharArray();
+    // } else {
+      var stringValue = value.format(_valueFormat);
+      return stringValue.toCharArray();
+    // }
   }
 
   private function buildCurrentValue(data as Array<Char>) as Float {
@@ -238,17 +250,19 @@ class NumericInputView extends WatchUi.View {
   //! state of your app here.
   public function onHide() as Void {}
 
-  public function setDebugInfo(event as String, coord as Lang.Array<Lang.Number>)  as Void {
-    
+  public function setDebugInfo(
+    event as String,
+    coord as Lang.Array<Lang.Number>
+  ) as Void {
     var key = getKeyPressed(coord);
     _debugInfo = Lang.format("Event[$1$] Coord[$2$,$3$] Key:[$4$]", [
       event,
       coord[0],
       coord[1],
-      key
-    ]);    
+      key,
+    ]);
   }
-  
+
   public function onKeyPressed(coord as Lang.Array<Lang.Number>) as Void {
     _keyPressed = getKeyPressed(coord);
 
@@ -268,9 +282,12 @@ class NumericInputView extends WatchUi.View {
     } else if (_keyPressed.equals("OK")) {
       _delegate.onAcceptNumericinput(_currentValue);
       WatchUi.popView(WatchUi.SLIDE_RIGHT);
+      return;
     } else if (_keyPressed.equals("CLR")) {
+      _currentValue = 0.0f;
       _editData = _editData.slice(0, 0);
       _cursorPos = 0;
+      _insert = false; // because display 0.0
     } else if (_keyPressed.equals("DEL")) {
       removeKey(true);
     } else if (_keyPressed.equals("BCK")) {
@@ -280,6 +297,15 @@ class NumericInputView extends WatchUi.View {
     }
 
     _currentValue = buildCurrentValue(_editData);
+
+    if (_debug) {
+      refreshUi();
+    }
+  }
+
+  public function refreshUi() as Void {
+    // WatchUi.requestUpdate(); not working, so close current view and rebuild again.
+    _delegate.onNumericinput(_currentValue, _cursorPos, _insert);
   }
 
   private function addKey(key as String, insert as Boolean) as Void {

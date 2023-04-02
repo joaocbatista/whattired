@@ -1,4 +1,7 @@
-menu2
+on device settings datafield
+- refresh screen after input -> input works...
+- fix -of 0.0 show empty after CLR or remove 0.0 <-- press back..
+  - remember CLR / BCK
 
 test input numeric on 830 en 1040
 or use connect iq mobile app
