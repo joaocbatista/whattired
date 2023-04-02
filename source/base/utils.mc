@@ -7,6 +7,21 @@ import Toybox.Application;
 const MILE = 1.609344;
 const FEET = 3.281;
 
+function getStorageValue(
+  key as Application.PropertyKeyType,
+  dflt as Application.PropertyValueType
+) as Application.PropertyValueType {
+  try {
+    var val = Toybox.Application.Storage.getValue(key);
+    if (val != null) {
+      return val;
+    }
+  } catch (ex) {
+    return dflt;
+  }
+  return dflt;
+}
+
 function getApplicationProperty(
   key as Application.PropertyKeyType,
   dflt as Application.PropertyValueType
@@ -20,6 +35,27 @@ function getApplicationProperty(
     return dflt;
   }
   return dflt;
+}
+
+// Same field in properties and storage
+// For booleans, and enums
+function getStorageElseApplicationProperty(
+  key as Application.PropertyKeyType,
+  dflt as Application.PropertyValueType
+) as Application.PropertyValueType {
+  try {
+    var overrule = getStorageValue(key, null);
+    if (overrule == null) {
+      return getApplicationProperty(key, dflt);
+    }
+
+    Application.Properties.setValue(key, overrule);
+    Toybox.Application.Storage.deleteValue(key);
+    return overrule;
+  } catch (ex) {
+    ex.printStackTrace();
+    return dflt;
+  }
 }
 
 function percentageOf(value as Numeric?, max as Numeric?) as Numeric {
