@@ -16,8 +16,6 @@ class NumericInputView extends WatchUi.View {
   private var _debugInfo as String = "";
 
   private var _keyPressed as String = "";
-  // private var _coord as Lang.Array<Lang.Number> =
-  //   [0, 0] as Lang.Array<Lang.Number>;
   private var _keyCoord as Lang.Array<Lang.Array<Lang.Number> > =
     [[]] as Lang.Array<Lang.Array<Lang.Number> >;
   private var _controlCoord as Lang.Array<Lang.Array<Lang.Number> > =
@@ -41,27 +39,35 @@ class NumericInputView extends WatchUi.View {
     debug as Boolean,
     delegate as DistanceMenuDelegate,
     prompt as String,
-    value as Float?,
-    cursorPos as Number?,
-    insert as Boolean
+    value as Float?
   ) {
     WatchUi.View.initialize();
     _delegate = delegate;
     _prompt = prompt;
     _debug = debug;
-    _insert = insert;
     // _partialUpdate = !debug;
     if (value != null) {
       _currentValue = value;
       _editData = buildEditedValue(_currentValue, _valueFormat);
-      if (cursorPos == null) {
-        _cursorPos = _currentValue.format(_valueFormat).length();        
-      } else {
-        _cursorPos = cursorPos as Number;
-      }
+      _cursorPos = _currentValue.format(_valueFormat).length();
     }
     _keyCoord = _keyCoord.slice(0, 0);
     _controlCoord = _controlCoord.slice(0, 0);
+  }
+
+  public function setEditData(
+    editData as Array<Char>,
+    cursorPos as Number?,
+    insert as Boolean
+  ) {
+    _editData = editData;
+    _currentValue = buildCurrentValue(_editData);
+    if (cursorPos == null) {
+      _cursorPos = _currentValue.format(_valueFormat).length();
+    } else {
+      _cursorPos = cursorPos as Number;
+    }
+    _insert = insert;
   }
 
   //! Load your resources here
@@ -93,6 +99,7 @@ class NumericInputView extends WatchUi.View {
   public function onUpdate(dc as Dc) as Void {
     var y = 1;
     // var fullscreenRefresh = !_partialUpdate or _keyCoord.size() == 0;
+    // view will close and open, so fullscreenr refresh!
     var fullscreenRefresh = true;
     if (fullscreenRefresh) {
       dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
@@ -119,8 +126,8 @@ class NumericInputView extends WatchUi.View {
     //   var stringValue = value.format("%d");
     //   return stringValue.toCharArray();
     // } else {
-      var stringValue = value.format(_valueFormat);
-      return stringValue.toCharArray();
+    var stringValue = value.format(_valueFormat);
+    return stringValue.toCharArray();
     // }
   }
 
@@ -286,8 +293,7 @@ class NumericInputView extends WatchUi.View {
     } else if (_keyPressed.equals("CLR")) {
       _currentValue = 0.0f;
       _editData = _editData.slice(0, 0);
-      _cursorPos = 0;
-      _insert = false; // because display 0.0
+      _cursorPos = 0;      
     } else if (_keyPressed.equals("DEL")) {
       removeKey(true);
     } else if (_keyPressed.equals("BCK")) {
@@ -298,14 +304,14 @@ class NumericInputView extends WatchUi.View {
 
     _currentValue = buildCurrentValue(_editData);
 
-    if (_debug) {
-      refreshUi();
-    }
+    //if (_debug) {
+    refreshUi();
+    //}
   }
 
   public function refreshUi() as Void {
-    // WatchUi.requestUpdate(); not working, so close current view and rebuild again.
-    _delegate.onNumericinput(_currentValue, _cursorPos, _insert);
+    // WatchUi.requestUpdate(); not working, so close current view and reopen again.
+    _delegate.onNumericinput(_editData, _cursorPos, _insert);
   }
 
   private function addKey(key as String, insert as Boolean) as Void {

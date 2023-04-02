@@ -24,12 +24,4 @@ class NumericInputDelegate extends WatchUi.BehaviorDelegate {
     _view.onKeyPressed(event.getCoordinates());   
     return true;
   }
-
-  // function onFlick(event as WatchUi.FlickEvent) {
-  //   if (_debug) {
-  //     _view.setDebugInfo("onFlick", event.getCoordinates());
-  //   }
-  //   _view.onKeyPressed(event.getCoordinates());
-  //   return true;
-  // }
 }

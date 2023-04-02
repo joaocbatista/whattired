@@ -208,9 +208,7 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
       _debug,
       self,
       _currentPrompt,
-      currentDistanceInKm,
-      null,
-      true
+      currentDistanceInKm
     );
 
     Toybox.WatchUi.pushView(
@@ -237,17 +235,16 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
   }
 
-  public function onNumericinput(distanceInKm as Float, cursorPos as Number, insert as Boolean) as Void {
+  public function onNumericinput(editData as Array<Char>, cursorPos as Number, insert as Boolean) as Void {
     // Hack to refresh screen
     WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
     var view = new $.NumericInputView(
       _debug,
       self,
       _currentPrompt,
-      distanceInKm,
-      cursorPos,
-      insert
+      0.0f      
     );
+    view.setEditData(editData, cursorPos, insert);
 
     Toybox.WatchUi.pushView(
       view,
