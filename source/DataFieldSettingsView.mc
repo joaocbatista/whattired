@@ -80,7 +80,8 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
     mi.setSubLabel("Manage distance settings");
     menu.addItem(mi);
 
-    boolean = $.getStorageElseApplicationProperty("showColors", true) as Boolean;
+    boolean =
+      $.getStorageElseApplicationProperty("showColors", true) as Boolean;
     menu.addItem(
       new WatchUi.ToggleMenuItem(
         "Show colors",
@@ -90,7 +91,8 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
         null
       )
     );
-    boolean = $.getStorageElseApplicationProperty("showValues", true) as Boolean;
+    boolean =
+      $.getStorageElseApplicationProperty("showValues", true) as Boolean;
     menu.addItem(
       new WatchUi.ToggleMenuItem(
         "Show values",
@@ -101,7 +103,8 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
       )
     );
     boolean =
-      $.getStorageElseApplicationProperty("showColorsSmallField", true) as Boolean;
+      $.getStorageElseApplicationProperty("showColorsSmallField", true) as
+      Boolean;
     menu.addItem(
       new WatchUi.ToggleMenuItem(
         "Show colors small field",
@@ -112,7 +115,8 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
       )
     );
     boolean =
-      $.getStorageElseApplicationProperty("showValuesSmallField", false) as Boolean;
+      $.getStorageElseApplicationProperty("showValuesSmallField", false) as
+      Boolean;
     menu.addItem(
       new WatchUi.ToggleMenuItem(
         "Show values small field",
@@ -122,6 +126,10 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
         null
       )
     );
+
+    mi = new WatchUi.MenuItem("Distance (debug)", null, "menuDistanceDebug", null);
+    mi.setSubLabel("Manage distance settings");
+    menu.addItem(mi);
 
     var view = new $.DataFieldSettingsView();
     WatchUi.pushView(

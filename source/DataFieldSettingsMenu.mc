@@ -34,7 +34,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     _currentMenuItem = menuItem;
     var id = menuItem.getId();
 
-    if (id instanceof String && id.equals("menuDistance")) {
+    if (id instanceof String && (id.equals("menuDistance") or id.equals("menuDistanceDebug"))) {      
       var distanceMenu = new WatchUi.Menu2({ :title => "Set distance for" });
 
       var mi = new WatchUi.MenuItem("Odo", null, "totalDistance", null);
@@ -117,9 +117,12 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi = new WatchUi.MenuItem("Max back", null, "maxDistanceBackTyre", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+
+      var debug = id.equals("menuDistanceDebug");
+
       WatchUi.pushView(
         distanceMenu,
-        new $.DistanceMenuDelegate(),
+        new $.DistanceMenuDelegate(debug),
         WatchUi.SLIDE_UP
       );
     } else if (id instanceof String && id.equals("showFocusSmallField")) {
@@ -185,9 +188,11 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
   private var _currentDistanceField as String = "";
   private var _currentMenuItem as MenuItem?;
+  private var _debug as Boolean = false;
 
-  public function initialize() {
+  public function initialize(debug as Boolean) {
     Menu2InputDelegate.initialize();
+    _debug = debug;
   }
 
   public function onSelect(item as MenuItem) as Void {
@@ -198,6 +203,7 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
       ($.getStorageValue(_currentDistanceField, 0.0f) as Float) / 1000
     ).toFloat();
     var view = new $.NumericInputView(
+      _debug,
       self,
       item.getLabel(),
       currentDistanceInKm
@@ -205,7 +211,7 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     Toybox.WatchUi.pushView(
       view,
-      new $.NumericInputDelegate(view),
+      new $.NumericInputDelegate(_debug, view, self),
       WatchUi.SLIDE_RIGHT
     );
   }
@@ -225,6 +231,10 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
     } catch (ex) {
       ex.printStackTrace();
     }
+  }
+
+  public function refreshUi() as Void {
+    WatchUi.requestUpdate();
   }
 
   //! Handle the back key being pressed

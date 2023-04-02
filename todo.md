@@ -1,4 +1,8 @@
 menu2
+
+test input numeric on 830 en 1040
+or use connect iq mobile app
+
 - set distance values -
 - set max
 - set color
