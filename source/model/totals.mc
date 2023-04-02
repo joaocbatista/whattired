@@ -325,9 +325,9 @@ class Totals {
 
   hidden function handleDate() as Void {
     var today = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-    var firstRide = false;
+    var dateChange = false;
     if (currentYear == 0) {
-      firstRide = true;
+      dateChange = true;
 
       totalDistanceYear = 0.0f;
       currentYear = today.year;
@@ -346,6 +346,7 @@ class Totals {
 
     // year change
     if (currentYear != today.year) {
+      dateChange = true;
       totalDistanceLastYear = totalDistanceYear;
       lastYear = currentYear;
 
@@ -355,6 +356,7 @@ class Totals {
     // month change
     var month = today.month as Number;
     if (currentMonth != month) {
+      dateChange = true;
       currentMonth = month;
       totalDistanceLastMonth = totalDistanceMonth;
       totalDistanceMonth = 0.0f;
@@ -362,6 +364,7 @@ class Totals {
     // week change
     var week = getWeekNumber(Time.now());
     if (currentWeek != week) {
+      dateChange = true;
       currentWeek = week;
       totalDistanceLastWeek = totalDistanceWeek;
       totalDistanceWeek = 0.0f;
@@ -369,12 +372,16 @@ class Totals {
 
     // ride started - via activity?
     if (!rideStarted) {
-      totalDistanceLastRide = totalDistanceRide;
+      // Only valid rides..
+      if (totalDistanceRide > 5.0) {
+        totalDistanceLastRide = totalDistanceRide;
+        dateChange = true;
+      }
       totalDistanceRide = 0.0f;
       rideStarted = true;
     }
 
-    if (firstRide) {
+    if (dateChange) {
       save();
     }
   }
