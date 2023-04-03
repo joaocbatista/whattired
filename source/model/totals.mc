@@ -31,6 +31,7 @@ class Totals {
 
   private var totalDistanceLastRide as Float = 0.0f;
   private var totalDistanceRide as Float = 0.0f;
+  private var distanceToDestination as Float = 0.0f;
 
   private var rideStarted as Boolean = false;
 
@@ -73,7 +74,10 @@ class Totals {
   public function GetTotalDistanceLastWeek() as Float {
     return totalDistanceLastWeek;
   }
-  public function GetTotalDistanceLastRide() as Float {
+  public function GetTotalDistanceLastRide() as Float {    
+    if (distanceToDestination > 0) {
+      return distanceToDestination;
+    }
     return totalDistanceLastRide;
   }
 
@@ -144,6 +148,13 @@ class Totals {
       }
     }
 
+    distanceToDestination = 0.0f;
+    if (info has :distanceToDestination) {
+      if (info.distanceToDestination != null) {
+        distanceToDestination = info.distanceToDestination as Float;
+      }
+    }
+    
     handleTyreReset(Activity.getProfileInfo());
   }
 
@@ -285,6 +296,8 @@ class Totals {
       handleDate();
     }
 
+    var switchFB = Storage.getValue("switch_front_back") ? true : false;
+
     triggerFrontTyre = (
       getApplicationProperty("triggerFrontTyre", "") as String
     ).toLower();
@@ -294,6 +307,9 @@ class Totals {
     if (reset) {
       totalDistanceFrontTyre = 0.0f;
       Storage.setValue("reset_front", false);
+      if (!switchFB) {
+        setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre);
+      }
     }
     triggerBackTyre = (
       getApplicationProperty("triggerBackTyre", "") as String
@@ -304,6 +320,18 @@ class Totals {
     if (reset) {
       totalDistanceBackTyre = 0.0f;
       Storage.setValue("reset_back", false);
+      if (!switchFB) {
+        setDistanceAsMeters("totalDistanceBackTyre", totalDistanceFrontTyre);
+      }
+    }
+
+    if (switchFB) {
+       Storage.setValue("switch_front_back", false);
+      var tmpBack = totalDistanceBackTyre;
+      totalDistanceBackTyre = totalDistanceFrontTyre;
+      totalDistanceFrontTyre = tmpBack;
+      setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre);
+      setDistanceAsMeters("totalDistanceBackTyre", totalDistanceBackTyre);
     }
   }
 
