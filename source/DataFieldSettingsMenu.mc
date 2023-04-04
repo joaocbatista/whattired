@@ -33,41 +33,52 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
   public function onSelect(menuItem as MenuItem) as Void {
     _currentMenuItem = menuItem;
     var id = menuItem.getId();
-
-    if (id instanceof String && (id.equals("menuDistance") or id.equals("menuDistanceDebug"))) {      
+    var distanceItems = [] as Array<String>;
+    if (
+      id instanceof String &&
+      (id.equals("menuDistance") or id.equals("menuDistanceDebug"))
+    ) {
       var distanceMenu = new WatchUi.Menu2({ :title => "Set distance for" });
 
       var mi = new WatchUi.MenuItem("Odo", null, "totalDistance", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Year", null, "totalDistanceYear", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Month", null, "totalDistanceMonth", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Week", null, "totalDistanceWeek", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Ride", null, "totalDistanceRide", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Front", null, "totalDistanceFrontTyre", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Back", null, "totalDistanceBackTyre", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Max Odo", null, "maxDistance", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem(
         "Last year",
@@ -77,6 +88,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       );
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem(
         "Last month",
@@ -86,6 +98,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       );
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem(
         "Last week",
@@ -95,6 +108,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       );
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem(
         "Last ride",
@@ -104,6 +118,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       );
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem(
         "Max front",
@@ -113,16 +128,18 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       );
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       mi = new WatchUi.MenuItem("Max back", null, "maxDistanceBackTyre", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
 
       var debug = id.equals("menuDistanceDebug");
 
       WatchUi.pushView(
         distanceMenu,
-        new $.DistanceMenuDelegate(debug),
+        new $.DistanceMenuDelegate(debug, self, distanceMenu, distanceItems),
         WatchUi.SLIDE_UP
       );
     } else if (id instanceof String && id.equals("showFocusSmallField")) {
@@ -175,25 +192,37 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     if (_currentMenuItem != null) {
       var mi = _currentMenuItem as MenuItem;
       var id = mi.getId();
-      if (id instanceof String && (id as String).equals("showFocusSmallField")) {
+      if (
+        id instanceof String &&
+        (id as String).equals("showFocusSmallField")
+      ) {
         mi.setSubLabel($.getFocusMenuSubLabel(mi.getId() as String));
       }
     }
   }
-  // public function cancelCurrent() as Void {
-  //   _currentField = "";
-  // }
 }
 
 class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
+  private var _debug as Boolean = false;
+  private var _delegate as DataFieldSettingsMenuDelegate;
   private var _currentDistanceField as String = "";
   private var _currentPrompt as String = "";
   private var _currentMenuItem as MenuItem?;
-  private var _debug as Boolean = false;
 
-  public function initialize(debug as Boolean) {
+  private var _distanceMenu as Menu2;
+  private var _distanceItems as Array<String>;
+
+  public function initialize(
+    debug as Boolean,
+    delegate as DataFieldSettingsMenuDelegate,
+    distanceMenu as Menu2,
+    distanceItems as Array<String>
+  ) {
     Menu2InputDelegate.initialize();
     _debug = debug;
+    _delegate = delegate;
+    _distanceMenu = distanceMenu;
+    _distanceItems = distanceItems;
   }
 
   public function onSelect(item as MenuItem) as Void {
@@ -228,6 +257,12 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
         if (_currentMenuItem != null) {
           var mi = _currentMenuItem as MenuItem;
           mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
+
+          // index is a number
+          var idx = _distanceItems.indexOf(mi.getId() as String);
+          if (idx != null) {
+            _distanceMenu.setFocus(idx);
+          }
         }
       }
     } catch (ex) {
@@ -235,15 +270,14 @@ class DistanceMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
   }
 
-  public function onNumericinput(editData as Array<Char>, cursorPos as Number, insert as Boolean) as Void {
+  public function onNumericinput(
+    editData as Array<Char>,
+    cursorPos as Number,
+    insert as Boolean
+  ) as Void {
     // Hack to refresh screen
     WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-    var view = new $.NumericInputView(
-      _debug,
-      self,
-      _currentPrompt,
-      0.0f      
-    );
+    var view = new $.NumericInputView(_debug, self, _currentPrompt, 0.0f);
     view.setEditData(editData, cursorPos, insert);
 
     Toybox.WatchUi.pushView(

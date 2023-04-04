@@ -72,6 +72,17 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
       )
     );
 
+    boolean = Storage.getValue("switch_front_back") ? true : false;
+    menu.addItem(
+      new WatchUi.ToggleMenuItem(
+        "Front <-> back",
+        null,
+        "switch_front_back",
+        boolean,
+        null
+      )
+    );
+
     var mi = new WatchUi.MenuItem("Focus", null, "showFocusSmallField", null);
     mi.setSubLabel($.getFocusMenuSubLabel(mi.getId() as String));
     menu.addItem(mi);

@@ -31,7 +31,7 @@ class Totals {
 
   private var totalDistanceLastRide as Float = 0.0f;
   private var totalDistanceRide as Float = 0.0f;
-  private var distanceToDestination as Float = 0.0f;
+  private var totalDistanceToDestination as Float = 0.0f;
 
   private var rideStarted as Boolean = false;
 
@@ -75,8 +75,8 @@ class Totals {
     return totalDistanceLastWeek;
   }
   public function GetTotalDistanceLastRide() as Float {    
-    if (distanceToDestination > 0) {
-      return distanceToDestination;
+    if (totalDistanceToDestination > 0) {
+      return totalDistanceToDestination;
     }
     return totalDistanceLastRide;
   }
@@ -148,10 +148,10 @@ class Totals {
       }
     }
 
-    distanceToDestination = 0.0f;
+    totalDistanceToDestination = 0.0f;
     if (info has :distanceToDestination) {
       if (info.distanceToDestination != null) {
-        distanceToDestination = info.distanceToDestination as Float;
+        totalDistanceToDestination = info.distanceToDestination as Float;
       }
     }
     

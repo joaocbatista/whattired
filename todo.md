@@ -13,3 +13,6 @@ perc greater than > 100 second circle
  - loop boolean 
  - ouline color 100+x perc
  - inside color x perc
+
+set focus after setting distance in menu
+- create color if available
