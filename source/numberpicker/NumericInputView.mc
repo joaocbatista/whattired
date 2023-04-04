@@ -59,7 +59,7 @@ class NumericInputView extends WatchUi.View {
     editData as Array<Char>,
     cursorPos as Number?,
     insert as Boolean
-  ) {
+  ) as Void {
     _editData = editData;
     _currentValue = buildCurrentValue(_editData);
     if (cursorPos == null) {

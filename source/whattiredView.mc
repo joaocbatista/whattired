@@ -635,6 +635,15 @@ class whattiredView extends WatchUi.DataField {
 
         dc.setColor(percentageToColor(perc), Graphics.COLOR_TRANSPARENT);
         drawPercentageCircle(dc, x, y, radius, perc, circleWidth);
+        
+        var percRemain = perc - 100;  
+        var radiusInner = radius - circleWidth - 3;
+        while (percRemain > 0 && (radiusInner > 0)) {
+          dc.setColor(percentageToColor(percRemain), Graphics.COLOR_TRANSPARENT);
+          drawPercentageCircle(dc, x, y, radiusInner, percRemain, circleWidth);
+          radiusInner = radiusInner - circleWidth - 3;
+          percRemain = percRemain - 100;  
+        }       
       }
     }
 
