@@ -7,6 +7,9 @@ import Toybox.Application;
 const MILE = 1.609344;
 const FEET = 3.281;
 
+var gCreateColors as Boolean = false;
+var gUseSetFillStroke as Boolean = false;
+
 function getStorageValue(
   key as Application.PropertyKeyType,
   dflt as Application.PropertyValueType
@@ -39,24 +42,24 @@ function getApplicationProperty(
 
 // Same field in properties and storage
 // For booleans, and enums
-function getStorageElseApplicationProperty(
-  key as Application.PropertyKeyType,
-  dflt as Application.PropertyValueType
-) as Application.PropertyValueType {
-  try {
-    var overrule = getStorageValue(key, null);
-    if (overrule == null) {
-      return getApplicationProperty(key, dflt);
-    }
+// function getStorageElseApplicationProperty(
+//   key as Application.PropertyKeyType,
+//   dflt as Application.PropertyValueType
+// ) as Application.PropertyValueType {
+//   try {
+//     var overrule = getStorageValue(key, null);
+//     if (overrule == null) {
+//       return getApplicationProperty(key, dflt);
+//     }
 
-    Application.Properties.setValue(key, overrule);
-    Toybox.Application.Storage.deleteValue(key);
-    return overrule;
-  } catch (ex) {
-    ex.printStackTrace();
-    return dflt;
-  }
-}
+//     Application.Properties.setValue(key, overrule);
+//     Toybox.Application.Storage.deleteValue(key);
+//     return overrule;
+//   } catch (ex) {
+//     ex.printStackTrace();
+//     return dflt;
+//   }
+// }
 
 function percentageOf(value as Numeric?, max as Numeric?) as Numeric {
   if (value == null || max == null) {
@@ -82,6 +85,31 @@ function drawPercentageLine(
 
   dc.fillRectangle(x, y, wPercentage, height);
   dc.drawPoint(x + maxwidth, y);
+}
+
+function drawPercentageCircleTarget(
+  dc as Dc,
+  x as Number,
+  y as Number,
+  radius as Number,
+  perc as Numeric,
+  circleWidth as Number
+) as Void {
+  dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+  dc.drawCircle(x, y, radius);
+
+  setColorByPerc(dc, perc);
+  drawPercentageCircle(dc, x, y, radius, perc, circleWidth);
+
+  var percRemain = perc - 100;
+  var radiusInner = radius - circleWidth - 3;
+  while (percRemain > 0 && radiusInner > 0) {
+    setColorByPerc(dc, percRemain);
+    drawPercentageCircle(dc, x, y, radiusInner, percRemain, circleWidth);
+
+    radiusInner = radiusInner - circleWidth - 3;
+    percRemain = percRemain - 100;
+  }
 }
 
 function drawPercentageCircle(
@@ -143,6 +171,97 @@ function getMatchingFont(
   return font;
 }
 
+function setColorByPerc(dc as Dc, perc as Numeric) as Void {
+  var color = 0;
+  if ($.gCreateColors) {
+    color = percentageToColorAlt(perc, 180, $.PERC_COLORS_SCHEME);
+  } else {
+    color = percentageToColor(perc);
+  }
+  if ($.gUseSetFillStroke) {
+    dc.setColor(Graphics.COLOR_TRANSPARENT, Graphics.COLOR_TRANSPARENT);
+    dc.setFill(color);
+    dc.setStroke(color);
+  } else {
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+  }
+}
+
+// [perc, R, G, B]
+const PERC_COLORS_WHITE_RED =
+  [
+    [0, 255, 255, 255],
+    [100, 255, 0, 0],
+  ] as Array<Array<Number> >;
+
+const PERC_COLORS_SCHEME =
+  [
+    [0, 255, 255, 255],
+    [55, 244, 246, 247], // COLOR_WHITE_4
+    [65, 174, 214, 241], // COLOR_WHITE_BLUE_3
+    [70, 169, 204, 227], // COLOR_WHITE_DK_BLUE_3
+    [75, 163, 228, 215], // COLOR_WHITE_LT_GREEN_3
+    [80, 169, 223, 191], // COLOR_WHITE_GREEN_3
+    [85, 249, 231, 159], // COLOR_WHITE_YELLOW_3
+    [95, 250, 215, 160], // COLOR_WHITE_ORANGE_3
+    [100, 250, 229, 211], // COLOR_WHITE_ORANGERED_2
+    [105, 245, 203, 167], // COLOR_WHITE_ORANGERED_3
+    [115, 237, 187, 153], // COLOR_WHITE_ORANGERED2_3
+    [125, 245, 183, 177], // COLOR_WHITE_RED_3
+    [135, 230, 176, 170], // COLOR_WHITE_DK_RED_3
+    [145, 215, 189, 226], // COLOR_WHITE_PURPLE_3
+    [155, 210, 180, 222], // COLOR_WHITE_DK_PURPLE_3
+    [165, 187, 143, 206], // COLOR_WHITE_DK_PURPLE_4
+    [999, 0, 0, 0], // COLOR_WHITE_DK_PURPLE_4
+  ] as Array<Array<Number> >;
+
+// alpha, 255 is solid, 0 is transparent
+function percentageToColorAlt(
+  percentage as Numeric?,
+  alpha as Number,
+  colorScheme as Array<Array<Number> >
+) as ColorType {
+  var pcolor = 0;
+  var pColors = colorScheme;
+  if (percentage == null || percentage == 0) {
+    return Graphics.createColor(alpha, 255, 255, 255);
+  }
+  // else if (percentage >= 100) {
+  //   // final entry
+  //   pcolor = pColors[pColors.size() - 1] as Array<Number>;
+  //   return Graphics.createColor(alpha, pcolor[1], pcolor[2], pcolor[3]);
+  // }
+
+  var i = 1;
+  while (i < pColors.size()) {
+    pcolor = pColors[i] as Array<Number>;
+    if (percentage <= pcolor[0]) {
+      break;
+    }
+    i++;
+  }
+  if (i >= pColors.size()) {
+    i = pColors.size() - 1;
+  }
+
+  // System.println(percentage);
+  // System.println(i);
+
+  var lower = pColors[i - 1];
+  var upper = pColors[i];
+  var range = upper[0] - lower[0];
+  var rangePct = 1;
+  if (range != 0) {
+    rangePct = (percentage - lower[0]) / range;
+  }
+  var pctLower = 1 - rangePct;
+  var pctUpper = rangePct;
+
+  var red = Math.floor(lower[1] * pctLower + upper[1] * pctUpper);
+  var green = Math.floor(lower[2] * pctLower + upper[2] * pctUpper);
+  var blue = Math.floor(lower[3] * pctLower + upper[3] * pctUpper);
+  return Graphics.createColor(alpha, red.toNumber(), green.toNumber(), blue.toNumber());
+}
 /* TODO
 var percentColors = [
     { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
@@ -228,7 +347,7 @@ function percentageToColor(percentage as Numeric?) as ColorType {
   return Colors.COLOR_WHITE_DK_PURPLE_4;
 }
 
-  // https://htmlcolorcodes.com/  -> use tint 3
+// https://htmlcolorcodes.com/  -> use tint 3
 module Colors {
   // color scale
   const COLOR_WHITE_1 = 0xfbeee6;

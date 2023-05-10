@@ -12,6 +12,7 @@ import Toybox.Attention;
 
 class Totals {
   private var elapsedDistanceActivity as Float = 0.0f;
+  private var elapsedDistanceLastSaved as Float = 0.0f;
   // odo
   private var totalDistance as Float = 0.0f;
   private var maxDistance as Float = 0.0f;
@@ -31,22 +32,17 @@ class Totals {
 
   private var totalDistanceLastRide as Float = 0.0f;
   private var totalDistanceRide as Float = 0.0f;
+  private var startDistanceCourse as Float = 0.0f;
   private var totalDistanceToDestination as Float = 0.0f;
 
   private var rideStarted as Boolean = false;
+  private var rideTimerState as Number = Activity.TIMER_STATE_OFF;
 
-  private var currentProfile as String = "";
-
-  private const MAX_COUNTER = 10;
-  private var triggerFrontTyre as String = "";
   private var totalDistanceFrontTyre as Float = 0.0f;
   private var maxDistanceFrontTyre as Float = 0.0f;
-  private var counterFrontTyreReset as Number = MAX_COUNTER;
-  private var triggerBackTyre as String = "";
   private var totalDistanceBackTyre as Float = 0.0f;
   private var maxDistanceBackTyre as Float = 0.0f;
-  private var counterBackTyreReset as Number = MAX_COUNTER;
-
+  
   public function GetTotalDistance() as Float {
     return totalDistance + elapsedDistanceActivity;
   }
@@ -63,7 +59,7 @@ class Totals {
     return totalDistanceWeek + elapsedDistanceActivity;
   }
   public function GetTotalDistanceRide() as Float {
-    return totalDistanceRide + elapsedDistanceActivity;
+    return elapsedDistanceActivity;
   }
   public function GetTotalDistanceLastYear() as Float {
     return totalDistanceLastYear;
@@ -74,11 +70,30 @@ class Totals {
   public function GetTotalDistanceLastWeek() as Float {
     return totalDistanceLastWeek;
   }
-  public function GetTotalDistanceLastRide() as Float {    
-    if (totalDistanceToDestination > 0) {
-      return totalDistanceToDestination;
-    }
+  public function GetTotalDistanceLastRide() as Float {
     return totalDistanceLastRide;
+  }
+  public function GetElapsedDistanceToDestination() as Float {
+    return elapsedDistanceActivity - startDistanceCourse;
+  }
+  public function GetDistanceToDestination() as Float {
+    return totalDistanceToDestination;
+  }
+  public function IsCourseActive() as Boolean {
+    System.println("totalDistanceToDestination:");
+    System.println(totalDistanceToDestination / 1000.0);
+    System.println("GetElapsedDistanceToDestination()");
+    System.println(GetElapsedDistanceToDestination() / 1000.0);
+    System.println("startDistanceCourse()");
+    System.println(startDistanceCourse / 1000.0);
+    System.println("elapsedDistanceActivity");
+    System.println(elapsedDistanceActivity / 1000.0);
+
+    return totalDistanceToDestination > 0;
+  }
+
+  public function IsActivityStopped() as Boolean {
+    return rideTimerState == Activity.TIMER_STATE_STOPPED;
   }
 
   public function GetTotalDistanceFrontTyre() as Float {
@@ -109,21 +124,11 @@ class Totals {
   public function HasRide() as Boolean {
     return $.gShowRide;
   }
-  public function HasFrontTyreTrigger() as Boolean {
-    return (
-      $.gShowFront &&
-      triggerFrontTyre.length() > 0 &&
-      maxDistanceFrontTyre > 1000
-    );
+  public function HasFrontTyre() as Boolean {
+    return $.gShowFront; // && maxDistanceFrontTyre >= 1000;
   }
-  public function HasBackTyreTrigger() as Boolean {
-    return (
-      $.gShowBack && triggerBackTyre.length() > 0 && maxDistanceBackTyre > 1000
-    );
-  }
-
-  public function GetCurrentProfile() as String {
-    return currentProfile;
+  public function HasBackTyre() as Boolean {
+    return $.gShowBack; // && maxDistanceBackTyre >= 1000;
   }
 
   function initialize() {}
@@ -139,10 +144,11 @@ class Totals {
 
     if (info has :timerState) {
       if (info.timerState != null) {
-        if (info.timerState == Activity.TIMER_STATE_STOPPED) {
+        rideTimerState = info.timerState as Number;
+        if (rideTimerState == Activity.TIMER_STATE_STOPPED) {
           rideStarted = false;
         }
-        if (!rideStarted && info.timerState == Activity.TIMER_STATE_ON) {
+        if (!rideStarted && rideTimerState == Activity.TIMER_STATE_ON) {
           handleDate();
         }
       }
@@ -154,143 +160,90 @@ class Totals {
         totalDistanceToDestination = info.distanceToDestination as Float;
       }
     }
-    
-    handleTyreReset(Activity.getProfileInfo());
+    // Remeber the distance, when course is started
+    if (totalDistanceToDestination == 0.0f) {
+      startDistanceCourse = 0.0f;
+    } else if (startDistanceCourse == 0.0f) {
+      startDistanceCourse = elapsedDistanceActivity;
+    }   
   }
-
-  function handleTyreReset(profile as Activity.ProfileInfo?) as Void {
-    if (profile == null || profile.name == null) {
-      return;
-    }
-    var profileName = (profile.name as String).toLower();
-    if (!currentProfile.equals(profileName)) {
-      currentProfile = profileName;
-      counterFrontTyreReset = MAX_COUNTER;
-      counterBackTyreReset = MAX_COUNTER;
-    }
-    if (triggerFrontTyre.length() > 0 && totalDistanceFrontTyre > 0.0f) {
-      if (profileName.find(triggerFrontTyre) != null) {
-        counterFrontTyreReset = counterFrontTyreReset - 1;
-        if (counterFrontTyreReset < 0) {
-          totalDistanceFrontTyre = 0.0f;
-          attentionReset();
-        } else {
-          attentionCountDown();
-        }
-      }
-    }
-
-    if (triggerBackTyre.length() > 0 && totalDistanceBackTyre > 0.0f) {
-      if (profileName.find(triggerBackTyre) != null) {
-        counterBackTyreReset = counterBackTyreReset - 1;
-        if (counterBackTyreReset < 0) {
-          totalDistanceBackTyre = 0.0f;
-          attentionReset();
-        } else {
-          attentionCountDown();
-        }
-      }
-    }
-  }
-
-  function attentionCountDown() as Void {
-    if (Attention has :playTone) {
-      if (Attention has :ToneProfile) {
-        var toneProfileBeeps =
-          [new Attention.ToneProfile(1500, 50)] as
-          Lang.Array<Attention.ToneProfile>;
-        Attention.playTone({ :toneProfile => toneProfileBeeps });
-      } else {
-        Attention.playTone(Attention.TONE_ALERT_LO);
-      }
-    }
-  }
-
-  function attentionReset() as Void {
-    if (Attention has :playTone) {
-      Attention.playTone(Attention.TONE_RESET);
-    }
-  }
-
-  function save() as Void {
+  
+  function save(loadValues as Boolean) as Void {
     try {
-      setDistanceAsMeters(
-        "totalDistance",
-        totalDistance + elapsedDistanceActivity
-      );
+      setDistanceAsMeters("totalDistance", totalDistance + elapsedDistanceLastSaved);
 
       Toybox.Application.Storage.setValue("lastYear", lastYear);
       setDistanceAsMeters("totalDistanceLastYear", totalDistanceLastYear);
 
       Toybox.Application.Storage.setValue("currentYear", currentYear);
-      setDistanceAsMeters(
-        "totalDistanceYear",
-        totalDistanceYear + elapsedDistanceActivity
-      );
+      setDistanceAsMeters("totalDistanceYear", totalDistanceYear + elapsedDistanceLastSaved);
 
       Toybox.Application.Storage.setValue("currentMonth", currentMonth);
       setDistanceAsMeters("totalDistanceLastMonth", totalDistanceLastMonth);
-      setDistanceAsMeters(
-        "totalDistanceMonth",
-        totalDistanceMonth + elapsedDistanceActivity
-      );
+      setDistanceAsMeters("totalDistanceMonth", totalDistanceMonth + elapsedDistanceLastSaved);
 
       Toybox.Application.Storage.setValue("currentWeek", currentWeek);
       setDistanceAsMeters("totalDistanceLastWeek", totalDistanceLastWeek);
-      setDistanceAsMeters(
-        "totalDistanceWeek",
-        totalDistanceWeek + elapsedDistanceActivity
+      setDistanceAsMeters("totalDistanceWeek", totalDistanceWeek + elapsedDistanceLastSaved);
+
+      System.println(
+        Lang.format("save: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
+          rideStarted,
+          elapsedDistanceActivity,
+          totalDistanceLastRide,
+        ])
       );
 
       setDistanceAsMeters("totalDistanceLastRide", totalDistanceLastRide);
-      setDistanceAsMeters(
-        "totalDistanceRide",
-        totalDistanceRide + elapsedDistanceActivity
-      );
+      setDistanceAsMeters("totalDistanceRide", elapsedDistanceActivity);
 
-      setDistanceAsMeters(
-        "totalDistanceFrontTyre",
-        totalDistanceFrontTyre + elapsedDistanceActivity
-      );
-      setDistanceAsMeters(
-        "totalDistanceBackTyre",
-        totalDistanceBackTyre + elapsedDistanceActivity
-      );
+      setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre + elapsedDistanceLastSaved);
+      setDistanceAsMeters("totalDistanceBackTyre", totalDistanceBackTyre + elapsedDistanceLastSaved);
 
       System.println("totals saved");
-      load(false);
+      if (loadValues) {
+        elapsedDistanceLastSaved = elapsedDistanceLastSaved;
+        load(false);
+      }
     } catch (ex) {
       ex.printStackTrace();
     }
   }
 
-  hidden function setDistanceAsMeters(
-    key as String,
-    distanceMeters as Float
-  ) as Void {
+  hidden function setDistanceAsMeters(key as String, distanceMeters as Float) as Void {
     Toybox.Application.Storage.setValue(key, distanceMeters);
   }
 
   // Storage values are in meters, (overrule) properties are in kilometers!
+  // Save will happen during pause / stop switch to connect iq widget
+  // so load values and correct with elapsed distance.
   function load(processDate as Boolean) as Void {
-    totalDistance = getDistanceAsMeters("totalDistance");
+    totalDistance = getDistanceAsMeters("totalDistance") - elapsedDistanceLastSaved;
     maxDistance = getDistanceAsMeters("maxDistance");
 
     lastYear = $.getStorageValue("lastYear", 0) as Number;
     totalDistanceLastYear = getDistanceAsMeters("totalDistanceLastYear");
     currentYear = $.getStorageValue("currentYear", 0) as Number;
-    totalDistanceYear = getDistanceAsMeters("totalDistanceYear");
+    totalDistanceYear = getDistanceAsMeters("totalDistanceYear") - elapsedDistanceLastSaved;
 
     currentMonth = $.getStorageValue("currentMonth", 0) as Number;
     totalDistanceLastMonth = getDistanceAsMeters("totalDistanceLastMonth");
-    totalDistanceMonth = getDistanceAsMeters("totalDistanceMonth");
+    totalDistanceMonth = getDistanceAsMeters("totalDistanceMonth") - elapsedDistanceLastSaved;
 
     currentWeek = $.getStorageValue("currentWeek", 0) as Number;
     totalDistanceLastWeek = getDistanceAsMeters("totalDistanceLastWeek");
-    totalDistanceWeek = getDistanceAsMeters("totalDistanceWeek");
+    totalDistanceWeek = getDistanceAsMeters("totalDistanceWeek") - elapsedDistanceLastSaved;
 
     totalDistanceLastRide = getDistanceAsMeters("totalDistanceLastRide");
-    totalDistanceRide = getDistanceAsMeters("totalDistanceRide");
+    totalDistanceRide = getDistanceAsMeters("totalDistanceRide") - elapsedDistanceLastSaved;
+
+    System.println(
+      Lang.format("load: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
+        rideStarted,
+        totalDistanceRide,
+        totalDistanceLastRide,
+      ])
+    );
 
     if (processDate) {
       handleDate();
@@ -298,10 +251,7 @@ class Totals {
 
     var switchFB = Storage.getValue("switch_front_back") ? true : false;
 
-    triggerFrontTyre = (
-      getApplicationProperty("triggerFrontTyre", "") as String
-    ).toLower();
-    totalDistanceFrontTyre = getDistanceAsMeters("totalDistanceFrontTyre");
+    totalDistanceFrontTyre = getDistanceAsMeters("totalDistanceFrontTyre") - elapsedDistanceLastSaved;
     maxDistanceFrontTyre = getDistanceAsMeters("maxDistanceFrontTyre");
     var reset = Storage.getValue("reset_front") ? true : false;
     if (reset) {
@@ -311,10 +261,7 @@ class Totals {
         setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre);
       }
     }
-    triggerBackTyre = (
-      getApplicationProperty("triggerBackTyre", "") as String
-    ).toLower();
-    totalDistanceBackTyre = getDistanceAsMeters("totalDistanceBackTyre");
+    totalDistanceBackTyre = getDistanceAsMeters("totalDistanceBackTyre") - elapsedDistanceLastSaved;
     maxDistanceBackTyre = getDistanceAsMeters("maxDistanceBackTyre");
     reset = Storage.getValue("reset_back") ? true : false;
     if (reset) {
@@ -326,7 +273,7 @@ class Totals {
     }
 
     if (switchFB) {
-       Storage.setValue("switch_front_back", false);
+      Storage.setValue("switch_front_back", false);
       var tmpBack = totalDistanceBackTyre;
       totalDistanceBackTyre = totalDistanceFrontTyre;
       totalDistanceFrontTyre = tmpBack;
@@ -336,15 +283,8 @@ class Totals {
   }
 
   hidden function getDistanceAsMeters(key as String) as Float {
-    try {
-      var overrule = getApplicationProperty(key, 0) as Number;
-      if (overrule > 0) {
-        setProperty(key, 0);
-        var distanceMeters = overrule.toFloat() * 1000.0f;
-        Toybox.Application.Storage.setValue(key, distanceMeters);
-        return distanceMeters as Float;
-      }
-      return getStorageValue(key, 0.0f) as Float;
+    try {      
+      return $.getStorageValue(key, 0.0f) as Float;
     } catch (ex) {
       ex.printStackTrace();
       return 0.0f;
@@ -399,25 +339,30 @@ class Totals {
     }
 
     // ride started - via activity?
-    if (!rideStarted) {
+    if (!rideStarted && rideTimerState == Activity.TIMER_STATE_ON) {
       // Only valid rides..
-      if (totalDistanceRide > 5.0) {
+      if (totalDistanceRide > 500.0) {
         totalDistanceLastRide = totalDistanceRide;
         dateChange = true;
       }
-      totalDistanceRide = 0.0f;
+      totalDistanceRide = 0.0f; // same as elapseddistance
       rideStarted = true;
+      System.println(
+        Lang.format("handledate: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
+          rideStarted,
+          totalDistanceRide,
+          totalDistanceLastRide,
+        ])
+      );
     }
 
     if (dateChange) {
-      save();
+      elapsedDistanceLastSaved = elapsedDistanceActivity;
+      save(true);
     }
   }
 
-  hidden function setProperty(
-    key as PropertyKeyType,
-    value as PropertyValueType
-  ) as Void {
+  hidden function setProperty(key as PropertyKeyType, value as PropertyValueType) as Void {
     Application.Properties.setValue(key, value);
   }
 

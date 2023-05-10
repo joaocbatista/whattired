@@ -51,37 +51,13 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
   public function onMenu() as Boolean {
     var menu = new $.DataFieldSettingsMenu();
     var boolean = Storage.getValue("reset_front") ? true : false;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Reset front",
-        null,
-        "reset_front",
-        boolean,
-        null
-      )
-    );
+    menu.addItem(new WatchUi.ToggleMenuItem("Reset front", null, "reset_front", boolean, null));
 
     boolean = Storage.getValue("reset_back") ? true : false;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Reset back",
-        null,
-        "reset_back",
-        boolean,
-        null
-      )
-    );
+    menu.addItem(new WatchUi.ToggleMenuItem("Reset back", null, "reset_back", boolean, null));
 
     boolean = Storage.getValue("switch_front_back") ? true : false;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Front <-> back",
-        null,
-        "switch_front_back",
-        boolean,
-        null
-      )
-    );
+    menu.addItem(new WatchUi.ToggleMenuItem("Front <-> back", null, "switch_front_back", boolean, null));
 
     var mi = new WatchUi.MenuItem("Focus", null, "showFocusSmallField", null);
     mi.setSubLabel($.getFocusMenuSubLabel(mi.getId() as String));
@@ -91,63 +67,21 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
     mi.setSubLabel("Manage distance settings");
     menu.addItem(mi);
 
-    boolean =
-      $.getStorageElseApplicationProperty("showColors", true) as Boolean;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Show colors",
-        null,
-        "showColors",
-        boolean,
-        null
-      )
-    );
-    boolean =
-      $.getStorageElseApplicationProperty("showValues", true) as Boolean;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Show values",
-        null,
-        "showValues",
-        boolean,
-        null
-      )
-    );
-    boolean =
-      $.getStorageElseApplicationProperty("showColorsSmallField", true) as
-      Boolean;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Show colors small field",
-        null,
-        "showColorsSmallField",
-        boolean,
-        null
-      )
-    );
-    boolean =
-      $.getStorageElseApplicationProperty("showValuesSmallField", false) as
-      Boolean;
-    menu.addItem(
-      new WatchUi.ToggleMenuItem(
-        "Show values small field",
-        null,
-        "showValuesSmallField",
-        boolean,
-        null
-      )
-    );
+    boolean = $.getStorageValue("showColors", true) as Boolean;
+    menu.addItem(new WatchUi.ToggleMenuItem("Show colors", null, "showColors", boolean, null));
+    boolean = $.getStorageValue("showValues", true) as Boolean;
+    menu.addItem(new WatchUi.ToggleMenuItem("Show values", null, "showValues", boolean, null));
+    boolean = $.getStorageValue("showColorsSmallField", true) as Boolean;
+    menu.addItem(new WatchUi.ToggleMenuItem("Show colors small field", null, "showColorsSmallField", boolean, null));
+    boolean = $.getStorageValue("showValuesSmallField", false) as Boolean;
+    menu.addItem(new WatchUi.ToggleMenuItem("Show values small field", null, "showValuesSmallField", boolean, null));
 
-    mi = new WatchUi.MenuItem("Distance (debug)", null, "menuDistanceDebug", null);
-    mi.setSubLabel("Manage distance settings");
+    mi = new WatchUi.MenuItem("Show fields", null, "menuFields", null);
+    mi.setSubLabel("Display data");
     menu.addItem(mi);
-
+   
     var view = new $.DataFieldSettingsView();
-    WatchUi.pushView(
-      menu,
-      new $.DataFieldSettingsMenuDelegate(view),
-      WatchUi.SLIDE_IMMEDIATE
-    );
+    WatchUi.pushView(menu, new $.DataFieldSettingsMenuDelegate(view), WatchUi.SLIDE_IMMEDIATE);
     return true;
   }
 
@@ -164,9 +98,7 @@ function getDistanceMenuSubLabel(key as Application.PropertyKeyType) as String {
 }
 
 function getFocusMenuSubLabel(key as Application.PropertyKeyType) as String {
-  var current =
-    $.getStorageElseApplicationProperty(key, Types.FocusNothing) as
-    Types.EnumFocus;
+  var current = $.getStorageValue(key, Types.FocusNothing) as Types.EnumFocus;
   switch (current) {
     case Types.FocusNothing:
       return "Nothing";
@@ -184,6 +116,8 @@ function getFocusMenuSubLabel(key as Application.PropertyKeyType) as String {
       return "Front";
     case Types.FocusBack:
       return "Back";
+    case Types.FocusCourse:
+      return "Course";
     default:
       return "Nothing";
   }

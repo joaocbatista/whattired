@@ -30,7 +30,7 @@ class whattiredApp extends Application.AppBase {
 
   // onStop() is called when your application is exiting
   function onStop(state as Dictionary?) as Void {
-    mTotals.save();
+    mTotals.save(false);
   }
 
   //! Return the initial view of your application here
@@ -42,10 +42,7 @@ class whattiredApp extends Application.AppBase {
   //! Return the settings view and delegate for the app
   //! @return Array Pair [View, Delegate]
   public function getSettingsView() as Array<Views or InputDelegates>? {
-    return (
-      [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()] as
-      Array<Views or InputDelegates>
-    );
+    return [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()] as Array<Views or InputDelegates>;
   }
 
   function onSettingsChanged() {
@@ -58,34 +55,21 @@ class whattiredApp extends Application.AppBase {
       System.println("Load usersettings");
 
       mTotals.load(true);
-      $.gShowColors =
-        $.getStorageElseApplicationProperty("showColors", true) as Boolean;
-      $.gShowValues =
-        $.getStorageElseApplicationProperty("showValues", true) as Boolean;
-      $.gShowColorsSmallField =
-        $.getStorageElseApplicationProperty("showColorsSmallField", true) as
-        Boolean;
-      $.gShowValuesSmallField =
-        $.getStorageElseApplicationProperty("showValuesSmallField", false) as
-        Boolean;
+      $.gShowColors = $.getStorageValue("showColors", true) as Boolean;
+      $.gShowValues = $.getStorageValue("showValues", true) as Boolean;
+      $.gShowColorsSmallField = $.getStorageValue("showColorsSmallField", true) as Boolean;
+      $.gShowValuesSmallField = $.getStorageValue("showValuesSmallField", false) as Boolean;
 
-      $.gShowFocusSmallField =
-        $.getStorageElseApplicationProperty(
-          "showFocusSmallField",
-          Types.FocusNothing
-        ) as Types.EnumFocus;
+      $.gShowFocusSmallField = $.getStorageValue("showFocusSmallField", Types.FocusNothing) as Types.EnumFocus;
 
-      var showFields = (
-        getApplicationProperty("showFields", "ORMWYFB") as String
-      ).toUpper();
-      $.gShowOdo = showFields.find("O") != null;
-      $.gShowYear = showFields.find("Y") != null;
-      $.gShowMonth = showFields.find("M") != null;
-      $.gShowWeek = showFields.find("W") != null;
-      $.gShowRide = showFields.find("R") != null;
+      $.gShowOdo = $.getStorageValue("showOdo", true) as Boolean;
+      $.gShowYear = $.getStorageValue("showYear", true) as Boolean;
+      $.gShowMonth = $.getStorageValue("showMonth", true) as Boolean;
+      $.gShowWeek = $.getStorageValue("showWeek", true) as Boolean;
+      $.gShowRide = $.getStorageValue("showRide", true) as Boolean;
+      $.gShowFront = $.getStorageValue("showFront", true) as Boolean;
+      $.gShowBack = $.getStorageValue("showBack", true) as Boolean;
 
-      $.gShowFront = showFields.find("F") != null;
-      $.gShowBack = showFields.find("B") != null;
       $.gNrOfDefaultFields = 0;
       if ($.gShowOdo) {
         $.gNrOfDefaultFields = $.gNrOfDefaultFields + 1;

@@ -10,5 +10,6 @@ module Types {
     FocusRide = 5,
     FocusFront = 6,
     FocusBack = 7,
+    FocusCourse = 8,
   }
 }

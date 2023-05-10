@@ -43,6 +43,19 @@ class whattiredView extends WatchUi.DataField {
   function initialize() {
     DataField.initialize();
     mTotals = getApp().mTotals;
+    checkFeatures();
+  }
+
+  function checkFeatures() as Void {
+    $.gCreateColors = Graphics has :createColor;
+    try {
+      $.gUseSetFillStroke = Graphics.Dc has :setStroke;
+      if ($.gUseSetFillStroke) {
+        $.gUseSetFillStroke = Graphics.Dc has :setFill;
+      }
+    } catch (ex) {
+      ex.printStackTrace();
+    }
   }
 
   function onLayout(dc as Dc) as Void {
@@ -74,8 +87,18 @@ class whattiredView extends WatchUi.DataField {
       nrOfFields = nrOfFields - 1;
     }
 
+    if (nrOfFields < 4) {
+      if (mHeight <= 100) {
+        mFontText = Graphics.FONT_SMALL;
+      } else {
+        mFontText = Graphics.FONT_MEDIUM;
+      }
+      mLabelWidth = dc.getTextWidthInPixels("Month", mFontText) + 2;
+    mLabelWidthFocused = dc.getTextWidthInPixels("M", mFontText) + 2;
+      mLineHeight = dc.getFontHeight(mFontText) - 1;
+    }
     // Add extra line if front/back enabled
-    if (mTotals.HasFrontTyreTrigger() || mTotals.HasBackTyreTrigger()) {
+    if (mTotals.HasFrontTyre() || mTotals.HasBackTyre()) {
       nrOfFields = nrOfFields + 1;
       if (!mSmallField) {
         // Room for F B Circles?
@@ -88,14 +111,21 @@ class whattiredView extends WatchUi.DataField {
 
     var totalHeight = nrOfFields * (mLineHeight + 1);
     if (totalHeight > mHeight) {
-      var corr =
-        Math.round((totalHeight - mHeight) / nrOfFields).toNumber() + 1;
+      var corr = Math.round((totalHeight - mHeight) / nrOfFields).toNumber() + 1;
       mLineHeight = mLineHeight - corr;
     }
   }
 
+  function onTimerPause() {
+    mTotals.save(false);
+  }
+
   function onTimerReset() {
-    mTotals.save();
+    mTotals.save(false);
+  }
+
+  function onTimerStop() {
+    mTotals.save(false);
   }
 
   function compute(info as Activity.Info) as Void {
@@ -198,33 +228,17 @@ class whattiredView extends WatchUi.DataField {
       line = line + 1;
     }
 
-    if (
-      mShowFBCircles &&
-      focus != Types.FocusFront &&
-      focus != Types.FocusBack
-    ) {
-      DrawDistanceCirclesFrontBackTyre(
-        dc,
-        line,
-        mShowValues,
-        mShowColors,
-        nothingHasFocus
-      );
+    if (mShowFBCircles && focus != Types.FocusFront && focus != Types.FocusBack) {
+      DrawDistanceCirclesFrontBackTyre(dc, line, mShowValues, mShowColors, nothingHasFocus);
     } else if (
       focus != Types.FocusFront &&
       focus != Types.FocusBack &&
-      mTotals.HasFrontTyreTrigger() &&
-      mTotals.HasBackTyreTrigger()
+      mTotals.HasFrontTyre() &&
+      mTotals.HasBackTyre()
     ) {
-      DrawDistanceFrontBackTyre(
-        dc,
-        line,
-        mShowValues,
-        mShowColors,
-        nothingHasFocus
-      );
+      DrawDistanceFrontBackTyre(dc, line, mShowValues, mShowColors, nothingHasFocus);
       line = line + 1;
-    } else if (focus != Types.FocusFront && mTotals.HasFrontTyreTrigger()) {
+    } else if (focus != Types.FocusFront && mTotals.HasFrontTyre()) {
       DrawDistanceLine(
         dc,
         line,
@@ -237,7 +251,7 @@ class whattiredView extends WatchUi.DataField {
         nothingHasFocus
       );
       line = line + 1;
-    } else if (focus != Types.FocusBack && mTotals.HasBackTyreTrigger()) {
+    } else if (focus != Types.FocusBack && mTotals.HasBackTyre()) {
       DrawDistanceLine(
         dc,
         line,
@@ -252,26 +266,28 @@ class whattiredView extends WatchUi.DataField {
       line = line + 1;
     }
 
+    // @@ should be in background, alpha color
+    // if (mTotals.IsCourseActive() && focus != Types.FocusCourse) {
+    //   DrawDistanceLine(
+    //     dc,
+    //     line,
+    //     "Crse",
+    //     "C",
+    //     mTotals.GetDistanceToDestination(),
+    //     mTotals.GetElapsedDistanceToDestination(),
+    //     mShowValues,
+    //     mShowColors,
+    //     nothingHasFocus
+    //   );
+    //   line = line + 1;
+    // }
+
     switch (focus) {
       case Types.FocusOdo:
-        drawDistanceCircle(
-          dc,
-          "Odo",
-          mTotals.GetTotalDistance(),
-          mTotals.GetMaxDistance(),
-          true,
-          true
-        );
+        drawDistanceCircle(dc, "Odo", mTotals.GetTotalDistance(), mTotals.GetMaxDistance(), true, true);
         break;
       case Types.FocusYear:
-        drawDistanceCircle(
-          dc,
-          "Year",
-          mTotals.GetTotalDistanceYear(),
-          mTotals.GetTotalDistanceLastYear(),
-          true,
-          true
-        );
+        drawDistanceCircle(dc, "Year", mTotals.GetTotalDistanceYear(), mTotals.GetTotalDistanceLastYear(), true, true);
         break;
       case Types.FocusMonth:
         drawDistanceCircle(
@@ -284,24 +300,11 @@ class whattiredView extends WatchUi.DataField {
         );
         break;
       case Types.FocusWeek:
-        drawDistanceCircle(
-          dc,
-          "Week",
-          mTotals.GetTotalDistanceWeek(),
-          mTotals.GetTotalDistanceLastWeek(),
-          true,
-          true
-        );
+        drawDistanceCircle(dc, "Week", mTotals.GetTotalDistanceWeek(), mTotals.GetTotalDistanceLastWeek(), true, true);
         break;
       case Types.FocusRide:
-        drawDistanceCircle(
-          dc,
-          "Ride",
-          mTotals.GetTotalDistanceRide(),
-          mTotals.GetTotalDistanceLastRide(),
-          true,
-          true
-        );
+        drawDistanceCircle(dc, "Ride", mTotals.GetTotalDistanceRide(), mTotals.GetTotalDistanceLastRide(), true, true);
+
         break;
       case Types.FocusFront:
         drawDistanceCircle(
@@ -322,6 +325,27 @@ class whattiredView extends WatchUi.DataField {
           true,
           true
         );
+        break;
+      case Types.FocusCourse:
+        if (mTotals.IsCourseActive()) {
+          drawDistanceCircle(
+            dc,
+            "Course",
+            mTotals.GetDistanceToDestination(),
+            mTotals.GetElapsedDistanceToDestination(),
+            true,
+            true
+          );
+        } else {
+          drawDistanceCircle(
+            dc,
+            "Ride",
+            mTotals.GetTotalDistanceRide(),
+            mTotals.GetTotalDistanceLastRide(),
+            true,
+            true
+          );
+        }
         break;
     }
   }
@@ -360,15 +384,7 @@ class whattiredView extends WatchUi.DataField {
     if (lastDistanceInMeters > 0) {
       perc = percentageOf(distanceInMeters, lastDistanceInMeters);
       if (showColors) {
-        drawPercentageLine(
-          dc,
-          x,
-          y + 1,
-          mWidth - x - 1,
-          perc,
-          mLineHeight - 1,
-          percentageToColor(perc)
-        );
+        drawPercentageLine(dc, x, y + 1, mWidth - x - 1, perc, mLineHeight - 1, percentageToColor(perc));
       }
     }
     if (showValues) {
@@ -380,25 +396,13 @@ class whattiredView extends WatchUi.DataField {
       if (perc >= 130 && showColors) {
         dc.setColor(mColorPerc100, Graphics.COLOR_TRANSPARENT);
       }
-      dc.drawText(
-        x,
-        y,
-        mFontText,
-        formattedValue + " " + units,
-        Graphics.TEXT_JUSTIFY_LEFT
-      );
+      dc.drawText(x, y, mFontText, formattedValue + " " + units, Graphics.TEXT_JUSTIFY_LEFT);
       // draw perc right
       if (perc > -1) {
         if (perc >= 130 && showColors) {
           dc.setColor(mColorPerc100, Graphics.COLOR_TRANSPARENT);
         }
-        dc.drawText(
-          mWidth - 1,
-          y,
-          mFontText,
-          perc.format("%d") + "%",
-          Graphics.TEXT_JUSTIFY_RIGHT
-        );
+        dc.drawText(mWidth - 1, y, mFontText, perc.format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
       }
     }
   }
@@ -438,15 +442,7 @@ class whattiredView extends WatchUi.DataField {
     if (maxMeters_front > 0) {
       perc_front = percentageOf(meters_front, maxMeters_front);
       if (showColors) {
-        drawPercentageLine(
-          dc,
-          x,
-          y + 1,
-          halfWidth - x - 1,
-          perc_front,
-          mLineHeight - 1,
-          percentageToColor(perc_front)
-        );
+        drawPercentageLine(dc, x, y + 1, halfWidth - x - 1, perc_front, mLineHeight - 1, percentageToColor(perc_front));
       }
     }
     if (showValues) {
@@ -459,13 +455,7 @@ class whattiredView extends WatchUi.DataField {
         if (perc_front >= 130 && showColors) {
           dc.setColor(mColorPerc100, Graphics.COLOR_TRANSPARENT);
         }
-        dc.drawText(
-          halfWidth - 1,
-          y,
-          mFontText,
-          perc_front.format("%d") + "%",
-          Graphics.TEXT_JUSTIFY_RIGHT
-        );
+        dc.drawText(halfWidth - 1, y, mFontText, perc_front.format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
       }
     }
 
@@ -476,15 +466,7 @@ class whattiredView extends WatchUi.DataField {
     if (maxMeters_back > 0) {
       perc_back = percentageOf(meters_back, maxMeters_back);
       if (showColors) {
-        drawPercentageLine(
-          dc,
-          x2,
-          y + 1,
-          mWidth - x2 - 1,
-          perc_back,
-          mLineHeight - 1,
-          percentageToColor(perc_back)
-        );
+        drawPercentageLine(dc, x2, y + 1, mWidth - x2 - 1, perc_back, mLineHeight - 1, percentageToColor(perc_back));
       }
     }
 
@@ -498,13 +480,7 @@ class whattiredView extends WatchUi.DataField {
         if (perc_back >= 130 && showColors) {
           dc.setColor(mColorPerc100, Graphics.COLOR_TRANSPARENT);
         }
-        dc.drawText(
-          mWidth - 1,
-          y,
-          mFontText,
-          perc_back.format("%d") + "%",
-          Graphics.TEXT_JUSTIFY_RIGHT
-        );
+        dc.drawText(mWidth - 1, y, mFontText, perc_back.format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
       }
     }
   }
@@ -530,46 +506,32 @@ class whattiredView extends WatchUi.DataField {
     var yLabel = y - radius;
     var yValue = y;
 
-    if (mTotals.HasFrontTyreTrigger()) {
+    if (mTotals.HasFrontTyre()) {
       var meters_front = mTotals.GetTotalDistanceFrontTyre();
       var maxMeters_front = mTotals.GetMaxDistanceFrontTyre();
       var perc_front = -1;
       if (maxMeters_front > 0) {
         perc_front = percentageOf(meters_front, maxMeters_front);
         if (showColors) {
-          dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-          dc.drawCircle(x, y, radius);
+          drawPercentageCircleTarget(dc, x, y, radius, perc_front, circleWidth);
+          // dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+          // dc.drawCircle(x, y, radius);
 
-          dc.setColor(
-            percentageToColor(perc_front),
-            Graphics.COLOR_TRANSPARENT
-          );
-          drawPercentageCircle(dc, x, y, radius, perc_front, circleWidth);
+          // setColorByPerc(dc, perc_front);
+          // drawPercentageCircle(dc, x, y, radius, perc_front, circleWidth);
 
           dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
-          dc.drawText(
-            x,
-            yLabel,
-            mFontText,
-            "Front",
-            Graphics.TEXT_JUSTIFY_CENTER
-          );
+          dc.drawText(x, yLabel, mFontText, "Front", Graphics.TEXT_JUSTIFY_CENTER);
 
           var units_front = getUnits(meters_front);
           var value_front = getDistanceInMeterOrKm(meters_front);
           var formattedValue_front = getNumberString(value_front, meters_front);
-          dc.drawText(
-            x,
-            yValue,
-            mFontText,
-            formattedValue_front + " " + units_front,
-            Graphics.TEXT_JUSTIFY_CENTER
-          );
+          dc.drawText(x, yValue, mFontText, formattedValue_front + " " + units_front, Graphics.TEXT_JUSTIFY_CENTER);
         }
       }
     }
 
-    if (mTotals.HasBackTyreTrigger()) {
+    if (mTotals.HasBackTyre()) {
       var meters_back = mTotals.GetTotalDistanceBackTyre();
       var maxMeters_back = mTotals.GetMaxDistanceBackTyre();
 
@@ -577,31 +539,20 @@ class whattiredView extends WatchUi.DataField {
       if (maxMeters_back > 0) {
         perc_back = percentageOf(meters_back, maxMeters_back);
         if (showColors) {
-          dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-          dc.drawCircle(x2, y, radius);
+          drawPercentageCircleTarget(dc, x2, y, radius, perc_back, circleWidth);
+          // dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+          // dc.drawCircle(x2, y, radius);
 
-          dc.setColor(percentageToColor(perc_back), Graphics.COLOR_TRANSPARENT);
-          drawPercentageCircle(dc, x2, y, radius, perc_back, circleWidth);
+          // setColorByPerc(dc, perc_back);
+          // drawPercentageCircle(dc, x2, y, radius, perc_back, circleWidth);
 
           dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
-          dc.drawText(
-            x2,
-            yLabel,
-            mFontText,
-            "Back",
-            Graphics.TEXT_JUSTIFY_CENTER
-          );
+          dc.drawText(x2, yLabel, mFontText, "Back", Graphics.TEXT_JUSTIFY_CENTER);
 
           var units_back = getUnits(meters_back);
           var value_back = getDistanceInMeterOrKm(meters_back);
           var formattedValue_back = getNumberString(value_back, meters_back);
-          dc.drawText(
-            x2,
-            yValue,
-            mFontText,
-            formattedValue_back + " " + units_back,
-            Graphics.TEXT_JUSTIFY_CENTER
-          );
+          dc.drawText(x2, yValue, mFontText, formattedValue_back + " " + units_back, Graphics.TEXT_JUSTIFY_CENTER);
         }
       }
     }
@@ -630,48 +581,18 @@ class whattiredView extends WatchUi.DataField {
     if (lastDistanceInMeters > 0) {
       perc = percentageOf(distanceInMeters, lastDistanceInMeters);
       if (showColors) {
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(x, y, radius);
-
-        dc.setColor(percentageToColor(perc), Graphics.COLOR_TRANSPARENT);
-        drawPercentageCircle(dc, x, y, radius, perc, circleWidth);
-        
-        var percRemain = perc - 100;  
-        var radiusInner = radius - circleWidth - 3;
-        while (percRemain > 0 && (radiusInner > 0)) {
-          dc.setColor(percentageToColor(percRemain), Graphics.COLOR_TRANSPARENT);
-          drawPercentageCircle(dc, x, y, radiusInner, percRemain, circleWidth);
-          radiusInner = radiusInner - circleWidth - 3;
-          percRemain = percRemain - 100;  
-        }       
+        drawPercentageCircleTarget(dc, x, y, radius, perc, circleWidth);
       }
     }
 
     if (showValues) {
-      var mFontFitted =
-        getMatchingFont(
-          dc,
-          mFonts,
-          dc.getWidth(),
-          formattedValue,
-          mFonts.size() - 1
-        ) as FontType;
+      var mFontFitted = getMatchingFont(dc, mFonts, dc.getWidth(), formattedValue, mFonts.size() - 1) as FontType;
 
       dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
-      dc.drawText(
-        x,
-        y,
-        mFontFitted,
-        formattedValue,
-        Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
-      );
-      dc.drawText(
-        x,
-        mHeight - mLineHeight - 2,
-        mFontText,
-        label + " in " + units,
-        Graphics.TEXT_JUSTIFY_CENTER
-      );
+      dc.drawText(x, y, mFontFitted, formattedValue, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+      dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
+      dc.drawText(x, mHeight - mLineHeight - 2, mFontText, label + " in " + units, Graphics.TEXT_JUSTIFY_CENTER);
     }
   }
 
@@ -692,13 +613,8 @@ class whattiredView extends WatchUi.DataField {
   }
 
   // @@ number only fonts doesnt contain spaces ..
-  hidden function getNumberString(
-    distanceInKmOrMiles as Float,
-    distanceInMeters as Float
-  ) as String {
-    var formatted = distanceInKmOrMiles.format(
-      getFormatString(distanceInMeters)
-    );
+  hidden function getNumberString(distanceInKmOrMiles as Float, distanceInMeters as Float) as String {
+    var formatted = distanceInKmOrMiles.format(getFormatString(distanceInMeters));
 
     if (distanceInKmOrMiles < 1000 || formatted == "") {
       return formatted;
@@ -713,9 +629,7 @@ class whattiredView extends WatchUi.DataField {
       chunks.add(StringUtil.charArrayToString(wholesPart.slice(0, start)));
     }
     for (var i = start; i < wholesPart.size(); i += chunkSize) {
-      chunks.add(
-        StringUtil.charArrayToString(wholesPart.slice(i, i + chunkSize))
-      );
+      chunks.add(StringUtil.charArrayToString(wholesPart.slice(i, i + chunkSize)));
     }
 
     var numberString = "" as String;

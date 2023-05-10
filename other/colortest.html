@@ -4,10 +4,11 @@
 </body>
 <script>
     var percentColors = [
-    { pct: 0.0, color: { r: 0xff, g: 0xff, b: 0xff } },
-    { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
-    { pct: 0.8, color: { r: 0xff, g: 0, b: 0 } },
-    { pct: 1.0, color: { r: 0x00, g: 0, b: 0 } } ];
+    { pct: 0.0, color: { r: 0xff, g: 0, b: 0 } },
+    { pct: 0.5, color: { r: 0, g: 0xff, b: 0 } },
+    { pct: 0.8, color: { r: 0, g: 0, b: 0xff } },
+    { pct: 1.0, color: { r: 0, g: 0, b: 0 } } 
+];
 
 var getColorForPercentage = function(pct) {
     for (var i = 1; i < percentColors.length - 1; i++) {
