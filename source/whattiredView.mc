@@ -94,7 +94,7 @@ class whattiredView extends WatchUi.DataField {
         mFontText = Graphics.FONT_MEDIUM;
       }
       mLabelWidth = dc.getTextWidthInPixels("Month", mFontText) + 2;
-    mLabelWidthFocused = dc.getTextWidthInPixels("M", mFontText) + 2;
+      mLabelWidthFocused = dc.getTextWidthInPixels("M", mFontText) + 2;
       mLineHeight = dc.getFontHeight(mFontText) - 1;
     }
     // Add extra line if front/back enabled
@@ -116,17 +116,17 @@ class whattiredView extends WatchUi.DataField {
     }
   }
 
-  function onTimerPause() {
-    mTotals.save(false);
-  }
+  // function onTimerPause() {
+  //   mTotals.save(false);
+  // }
 
   function onTimerReset() {
-    mTotals.save(false);
+    mTotals.save(true);
   }
 
-  function onTimerStop() {
-    mTotals.save(false);
-  }
+  // function onTimerStop() {
+  //   mTotals.save(false);
+  // }
 
   function compute(info as Activity.Info) as Void {
     mTotals.compute(info);

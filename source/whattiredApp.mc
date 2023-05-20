@@ -30,9 +30,10 @@ class whattiredApp extends Application.AppBase {
 
   // onStop() is called when your application is exiting
   function onStop(state as Dictionary?) as Void {
-    mTotals.save(false);
+    // mTotals.save(false);
   }
 
+  
   //! Return the initial view of your application here
   function getInitialView() as Array<Views or InputDelegates>? {
     loadUserSettings();
@@ -47,6 +48,10 @@ class whattiredApp extends Application.AppBase {
 
   function onSettingsChanged() {
     loadUserSettings();
+  }
+
+  function triggerFrontBack() as Void {
+    mTotals.triggerFrontBack();
   }
 
   (:typecheck(disableBackgroundCheck))

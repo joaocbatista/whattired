@@ -12,7 +12,6 @@ import Toybox.Attention;
 
 class Totals {
   private var elapsedDistanceActivity as Float = 0.0f;
-  private var elapsedDistanceLastSaved as Float = 0.0f;
   // odo
   private var totalDistance as Float = 0.0f;
   private var maxDistance as Float = 0.0f;
@@ -42,7 +41,7 @@ class Totals {
   private var maxDistanceFrontTyre as Float = 0.0f;
   private var totalDistanceBackTyre as Float = 0.0f;
   private var maxDistanceBackTyre as Float = 0.0f;
-  
+
   public function GetTotalDistance() as Float {
     return totalDistance + elapsedDistanceActivity;
   }
@@ -165,26 +164,26 @@ class Totals {
       startDistanceCourse = 0.0f;
     } else if (startDistanceCourse == 0.0f) {
       startDistanceCourse = elapsedDistanceActivity;
-    }   
+    }
   }
-  
+
   function save(loadValues as Boolean) as Void {
     try {
-      setDistanceAsMeters("totalDistance", totalDistance + elapsedDistanceLastSaved);
+      setDistanceAsMeters("totalDistance", totalDistance + elapsedDistanceActivity);
 
       Toybox.Application.Storage.setValue("lastYear", lastYear);
       setDistanceAsMeters("totalDistanceLastYear", totalDistanceLastYear);
 
       Toybox.Application.Storage.setValue("currentYear", currentYear);
-      setDistanceAsMeters("totalDistanceYear", totalDistanceYear + elapsedDistanceLastSaved);
+      setDistanceAsMeters("totalDistanceYear", totalDistanceYear + elapsedDistanceActivity);
 
       Toybox.Application.Storage.setValue("currentMonth", currentMonth);
       setDistanceAsMeters("totalDistanceLastMonth", totalDistanceLastMonth);
-      setDistanceAsMeters("totalDistanceMonth", totalDistanceMonth + elapsedDistanceLastSaved);
+      setDistanceAsMeters("totalDistanceMonth", totalDistanceMonth + elapsedDistanceActivity);
 
       Toybox.Application.Storage.setValue("currentWeek", currentWeek);
       setDistanceAsMeters("totalDistanceLastWeek", totalDistanceLastWeek);
-      setDistanceAsMeters("totalDistanceWeek", totalDistanceWeek + elapsedDistanceLastSaved);
+      setDistanceAsMeters("totalDistanceWeek", totalDistanceWeek + elapsedDistanceActivity);
 
       System.println(
         Lang.format("save: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
@@ -197,12 +196,11 @@ class Totals {
       setDistanceAsMeters("totalDistanceLastRide", totalDistanceLastRide);
       setDistanceAsMeters("totalDistanceRide", elapsedDistanceActivity);
 
-      setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre + elapsedDistanceLastSaved);
-      setDistanceAsMeters("totalDistanceBackTyre", totalDistanceBackTyre + elapsedDistanceLastSaved);
+      setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre + elapsedDistanceActivity);
+      setDistanceAsMeters("totalDistanceBackTyre", totalDistanceBackTyre + elapsedDistanceActivity);
 
       System.println("totals saved");
-      if (loadValues) {
-        elapsedDistanceLastSaved = elapsedDistanceLastSaved;
+      if (loadValues) {        
         load(false);
       }
     } catch (ex) {
@@ -218,24 +216,24 @@ class Totals {
   // Save will happen during pause / stop switch to connect iq widget
   // so load values and correct with elapsed distance.
   function load(processDate as Boolean) as Void {
-    totalDistance = getDistanceAsMeters("totalDistance") - elapsedDistanceLastSaved;
+    totalDistance = getDistanceAsMeters("totalDistance");
     maxDistance = getDistanceAsMeters("maxDistance");
 
     lastYear = $.getStorageValue("lastYear", 0) as Number;
     totalDistanceLastYear = getDistanceAsMeters("totalDistanceLastYear");
     currentYear = $.getStorageValue("currentYear", 0) as Number;
-    totalDistanceYear = getDistanceAsMeters("totalDistanceYear") - elapsedDistanceLastSaved;
+    totalDistanceYear = getDistanceAsMeters("totalDistanceYear");
 
     currentMonth = $.getStorageValue("currentMonth", 0) as Number;
     totalDistanceLastMonth = getDistanceAsMeters("totalDistanceLastMonth");
-    totalDistanceMonth = getDistanceAsMeters("totalDistanceMonth") - elapsedDistanceLastSaved;
+    totalDistanceMonth = getDistanceAsMeters("totalDistanceMonth");
 
     currentWeek = $.getStorageValue("currentWeek", 0) as Number;
     totalDistanceLastWeek = getDistanceAsMeters("totalDistanceLastWeek");
-    totalDistanceWeek = getDistanceAsMeters("totalDistanceWeek") - elapsedDistanceLastSaved;
+    totalDistanceWeek = getDistanceAsMeters("totalDistanceWeek");
 
     totalDistanceLastRide = getDistanceAsMeters("totalDistanceLastRide");
-    totalDistanceRide = getDistanceAsMeters("totalDistanceRide") - elapsedDistanceLastSaved;
+    totalDistanceRide = getDistanceAsMeters("totalDistanceRide");
 
     System.println(
       Lang.format("load: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
@@ -249,11 +247,21 @@ class Totals {
       handleDate();
     }
 
-    var switchFB = Storage.getValue("switch_front_back") ? true : false;
-
-    totalDistanceFrontTyre = getDistanceAsMeters("totalDistanceFrontTyre") - elapsedDistanceLastSaved;
+    totalDistanceFrontTyre = getDistanceAsMeters("totalDistanceFrontTyre");
     maxDistanceFrontTyre = getDistanceAsMeters("maxDistanceFrontTyre");
-    var reset = Storage.getValue("reset_front") ? true : false;
+    totalDistanceBackTyre = getDistanceAsMeters("totalDistanceBackTyre");
+    maxDistanceBackTyre = getDistanceAsMeters("maxDistanceBackTyre");
+  }
+
+  function triggerFrontBack() as Void {
+    var switchFB = $.getStorageValue("switch_front_back", false) as Boolean;
+
+    totalDistanceFrontTyre = getDistanceAsMeters("totalDistanceFrontTyre");
+    maxDistanceFrontTyre = getDistanceAsMeters("maxDistanceFrontTyre");
+    totalDistanceBackTyre = getDistanceAsMeters("totalDistanceBackTyre");
+    maxDistanceBackTyre = getDistanceAsMeters("maxDistanceBackTyre");
+
+    var reset = $.getStorageValue("reset_front", false) as Boolean;
     if (reset) {
       totalDistanceFrontTyre = 0.0f;
       Storage.setValue("reset_front", false);
@@ -261,9 +269,8 @@ class Totals {
         setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre);
       }
     }
-    totalDistanceBackTyre = getDistanceAsMeters("totalDistanceBackTyre") - elapsedDistanceLastSaved;
-    maxDistanceBackTyre = getDistanceAsMeters("maxDistanceBackTyre");
-    reset = Storage.getValue("reset_back") ? true : false;
+
+    reset = $.getStorageValue("reset_back", false) as Boolean;
     if (reset) {
       totalDistanceBackTyre = 0.0f;
       Storage.setValue("reset_back", false);
@@ -283,7 +290,7 @@ class Totals {
   }
 
   hidden function getDistanceAsMeters(key as String) as Float {
-    try {      
+    try {
       return $.getStorageValue(key, 0.0f) as Float;
     } catch (ex) {
       ex.printStackTrace();
@@ -357,7 +364,6 @@ class Totals {
     }
 
     if (dateChange) {
-      elapsedDistanceLastSaved = elapsedDistanceActivity;
       save(true);
     }
   }

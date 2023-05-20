@@ -1,3 +1,5 @@
+on activity trigger to save ...
+
 remove settinsg.xml
 show fields on device
 + show which fields

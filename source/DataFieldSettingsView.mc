@@ -50,13 +50,13 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
   //! @return true if handled, false otherwise
   public function onMenu() as Boolean {
     var menu = new $.DataFieldSettingsMenu();
-    var boolean = Storage.getValue("reset_front") ? true : false;
+    var boolean = $.getStorageValue("reset_front", false) as Boolean;
     menu.addItem(new WatchUi.ToggleMenuItem("Reset front", null, "reset_front", boolean, null));
 
-    boolean = Storage.getValue("reset_back") ? true : false;
+    boolean =  $.getStorageValue("reset_back", false) as Boolean; 
     menu.addItem(new WatchUi.ToggleMenuItem("Reset back", null, "reset_back", boolean, null));
 
-    boolean = Storage.getValue("switch_front_back") ? true : false;
+    boolean = $.getStorageValue("switch_front_back", false) as Boolean;
     menu.addItem(new WatchUi.ToggleMenuItem("Front <-> back", null, "switch_front_back", boolean, null));
 
     var mi = new WatchUi.MenuItem("Focus", null, "showFocusSmallField", null);
@@ -87,6 +87,7 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 
   public function onBack() as Boolean {
     getApp().onSettingsChanged();
+    getApp().triggerFrontBack();
     return false;
   }
 }
