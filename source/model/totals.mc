@@ -11,74 +11,100 @@ import Toybox.StringUtil;
 import Toybox.Attention;
 
 class Totals {
-  private var elapsedDistanceActivity as Float = 0.0f;
+ private
+  var elapsedDistanceActivity as Float = 0.0f;
   // odo
-  private var totalDistance as Float = 0.0f;
-  private var maxDistance as Float = 0.0f;
+ private
+  var totalDistance as Float = 0.0f;
+ private
+  var maxDistance as Float = 0.0f;
 
-  private var lastYear as Number = 0;
-  private var totalDistanceLastYear as Float = 0.0f;
-  private var currentYear as Number = 0;
-  private var totalDistanceYear as Float = 0.0f;
+ private
+  var lastYear as Number = 0;
+ private
+  var totalDistanceLastYear as Float = 0.0f;
+ private
+  var currentYear as Number = 0;
+ private
+  var totalDistanceYear as Float = 0.0f;
 
-  private var totalDistanceLastMonth as Float = 0.0f;
-  private var currentMonth as Number = 0;
-  private var totalDistanceMonth as Float = 0.0f;
+ private
+  var totalDistanceLastMonth as Float = 0.0f;
+ private
+  var currentMonth as Number = 0;
+ private
+  var totalDistanceMonth as Float = 0.0f;
 
-  private var currentWeek as Number = 0;
-  private var totalDistanceLastWeek as Float = 0.0f;
-  private var totalDistanceWeek as Float = 0.0f;
+ private
+  var currentWeek as Number = 0;
+ private
+  var totalDistanceLastWeek as Float = 0.0f;
+ private
+  var totalDistanceWeek as Float = 0.0f;
 
-  private var totalDistanceLastRide as Float = 0.0f;
-  private var totalDistanceRide as Float = 0.0f;
-  private var startDistanceCourse as Float = 0.0f;
-  private var totalDistanceToDestination as Float = 0.0f;
+ private
+  var totalDistanceLastRide as Float = 0.0f;
+ private
+  var totalDistanceRide as Float = 0.0f;
+ private
+  var startDistanceCourse as Float = 0.0f;
+ private
+  var totalDistanceToDestination as Float = 0.0f;
 
-  private var rideStarted as Boolean = false;
-  private var rideTimerState as Number = Activity.TIMER_STATE_OFF;
+ private
+  var rideStarted as Boolean = false;
+ private
+  var rideTimerState as Number = Activity.TIMER_STATE_OFF;
 
-  private var totalDistanceFrontTyre as Float = 0.0f;
-  private var maxDistanceFrontTyre as Float = 0.0f;
-  private var totalDistanceBackTyre as Float = 0.0f;
-  private var maxDistanceBackTyre as Float = 0.0f;
+ private
+  var totalDistanceFrontTyre as Float = 0.0f;
+ private
+  var maxDistanceFrontTyre as Float = 0.0f;
+ private
+  var totalDistanceBackTyre as Float = 0.0f;
+ private
+  var maxDistanceBackTyre as Float = 0.0f;
 
-  public function GetTotalDistance() as Float {
+ public
+  function GetTotalDistance() as Float {
     return totalDistance + elapsedDistanceActivity;
   }
-  public function GetMaxDistance() as Float {
-    return maxDistance;
-  }
-  public function GetTotalDistanceYear() as Float {
+ public
+  function GetMaxDistance() as Float { return maxDistance; }
+ public
+  function GetTotalDistanceYear() as Float {
     return totalDistanceYear + elapsedDistanceActivity;
   }
-  public function GetTotalDistanceMonth() as Float {
+ public
+  function GetTotalDistanceMonth() as Float {
     return totalDistanceMonth + elapsedDistanceActivity;
   }
-  public function GetTotalDistanceWeek() as Float {
+ public
+  function GetTotalDistanceWeek() as Float {
     return totalDistanceWeek + elapsedDistanceActivity;
   }
-  public function GetTotalDistanceRide() as Float {
-    return elapsedDistanceActivity;
-  }
-  public function GetTotalDistanceLastYear() as Float {
-    return totalDistanceLastYear;
-  }
-  public function GetTotalDistanceLastMonth() as Float {
+ public
+  function GetTotalDistanceRide() as Float { return elapsedDistanceActivity; }
+ public
+  function GetTotalDistanceLastYear() as Float { return totalDistanceLastYear; }
+ public
+  function GetTotalDistanceLastMonth() as Float {
     return totalDistanceLastMonth;
   }
-  public function GetTotalDistanceLastWeek() as Float {
-    return totalDistanceLastWeek;
-  }
-  public function GetTotalDistanceLastRide() as Float {
-    return totalDistanceLastRide;
-  }
-  public function GetElapsedDistanceToDestination() as Float {
+ public
+  function GetTotalDistanceLastWeek() as Float { return totalDistanceLastWeek; }
+ public
+  function GetTotalDistanceLastRide() as Float { return totalDistanceLastRide; }
+ public
+  function GetElapsedDistanceToDestination() as Float {
     return elapsedDistanceActivity - startDistanceCourse;
   }
-  public function GetDistanceToDestination() as Float {
+ public
+  function GetDistanceToDestination() as Float {
     return totalDistanceToDestination;
   }
-  public function IsCourseActive() as Boolean {
+ public
+  function IsCourseActive() as Boolean {
     System.println("totalDistanceToDestination:");
     System.println(totalDistanceToDestination / 1000.0);
     System.println("GetElapsedDistanceToDestination()");
@@ -91,49 +117,47 @@ class Totals {
     return totalDistanceToDestination > 0;
   }
 
-  public function IsActivityStopped() as Boolean {
+ public
+  function IsActivityStopped() as Boolean {
     return rideTimerState == Activity.TIMER_STATE_STOPPED;
   }
 
-  public function GetTotalDistanceFrontTyre() as Float {
+ public
+  function GetTotalDistanceFrontTyre() as Float {
     return totalDistanceFrontTyre + elapsedDistanceActivity;
   }
-  public function GetMaxDistanceFrontTyre() as Float {
-    return maxDistanceFrontTyre;
-  }
-  public function GetTotalDistanceBackTyre() as Float {
+ public
+  function GetMaxDistanceFrontTyre() as Float { return maxDistanceFrontTyre; }
+ public
+  function GetTotalDistanceBackTyre() as Float {
     return totalDistanceBackTyre + elapsedDistanceActivity;
   }
-  public function GetMaxDistanceBackTyre() as Float {
-    return maxDistanceBackTyre;
-  }
+ public
+  function GetMaxDistanceBackTyre() as Float { return maxDistanceBackTyre; }
 
-  public function HasOdo() as Boolean {
-    return $.gShowOdo;
+ public
+  function HasOdo() as Boolean { return $.gShowOdo; }
+ public
+  function HasYear() as Boolean { return $.gShowYear; }
+ public
+  function HasMonth() as Boolean { return $.gShowMonth; }
+ public
+  function HasWeek() as Boolean { return $.gShowWeek; }
+ public
+  function HasRide() as Boolean { return $.gShowRide; }
+ public
+  function HasFrontTyre() as Boolean {
+    return $.gShowFront;  // && maxDistanceFrontTyre >= 1000;
   }
-  public function HasYear() as Boolean {
-    return $.gShowYear;
-  }
-  public function HasMonth() as Boolean {
-    return $.gShowMonth;
-  }
-  public function HasWeek() as Boolean {
-    return $.gShowWeek;
-  }
-  public function HasRide() as Boolean {
-    return $.gShowRide;
-  }
-  public function HasFrontTyre() as Boolean {
-    return $.gShowFront; // && maxDistanceFrontTyre >= 1000;
-  }
-  public function HasBackTyre() as Boolean {
-    return $.gShowBack; // && maxDistanceBackTyre >= 1000;
+ public
+  function HasBackTyre() as Boolean {
+    return $.gShowBack;  // && maxDistanceBackTyre >= 1000;
   }
 
   function initialize() {}
 
   function compute(info as Activity.Info) as Void {
-    if (info has :elapsedDistance) {
+    if (info has : elapsedDistance) {
       if (info.elapsedDistance != null) {
         elapsedDistanceActivity = info.elapsedDistance as Float;
       } else {
@@ -141,7 +165,7 @@ class Totals {
       }
     }
 
-    if (info has :timerState) {
+    if (info has : timerState) {
       if (info.timerState != null) {
         rideTimerState = info.timerState as Number;
         if (rideTimerState == Activity.TIMER_STATE_STOPPED) {
@@ -154,7 +178,7 @@ class Totals {
     }
 
     totalDistanceToDestination = 0.0f;
-    if (info has :distanceToDestination) {
+    if (info has : distanceToDestination) {
       if (info.distanceToDestination != null) {
         totalDistanceToDestination = info.distanceToDestination as Float;
       }
@@ -169,38 +193,28 @@ class Totals {
 
   function save(loadValues as Boolean) as Void {
     try {
-      setDistanceAsMeters("totalDistance", totalDistance + elapsedDistanceActivity);
+      setDistanceAsMeters("totalDistance",
+                          totalDistance + elapsedDistanceActivity);
 
-      Toybox.Application.Storage.setValue("lastYear", lastYear);
-      setDistanceAsMeters("totalDistanceLastYear", totalDistanceLastYear);
-
-      Toybox.Application.Storage.setValue("currentYear", currentYear);
-      setDistanceAsMeters("totalDistanceYear", totalDistanceYear + elapsedDistanceActivity);
-
-      Toybox.Application.Storage.setValue("currentMonth", currentMonth);
-      setDistanceAsMeters("totalDistanceLastMonth", totalDistanceLastMonth);
-      setDistanceAsMeters("totalDistanceMonth", totalDistanceMonth + elapsedDistanceActivity);
-
-      Toybox.Application.Storage.setValue("currentWeek", currentWeek);
-      setDistanceAsMeters("totalDistanceLastWeek", totalDistanceLastWeek);
-      setDistanceAsMeters("totalDistanceWeek", totalDistanceWeek + elapsedDistanceActivity);
+      saveYear();
+      saveMonth();
+      saveWeek();
+      saveRide();
 
       System.println(
-        Lang.format("save: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
-          rideStarted,
-          elapsedDistanceActivity,
-          totalDistanceLastRide,
-        ])
-      );
+          Lang.format("save: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
+            rideStarted,
+            elapsedDistanceActivity,
+            totalDistanceLastRide,
+          ]));
 
-      setDistanceAsMeters("totalDistanceLastRide", totalDistanceLastRide);
-      setDistanceAsMeters("totalDistanceRide", elapsedDistanceActivity);
-
-      setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre + elapsedDistanceActivity);
-      setDistanceAsMeters("totalDistanceBackTyre", totalDistanceBackTyre + elapsedDistanceActivity);
+      setDistanceAsMeters("totalDistanceFrontTyre",
+                          totalDistanceFrontTyre + elapsedDistanceActivity);
+      setDistanceAsMeters("totalDistanceBackTyre",
+                          totalDistanceBackTyre + elapsedDistanceActivity);
 
       System.println("totals saved");
-      if (loadValues) {        
+      if (loadValues) {
         load(false);
       }
     } catch (ex) {
@@ -208,7 +222,35 @@ class Totals {
     }
   }
 
-  hidden function setDistanceAsMeters(key as String, distanceMeters as Float) as Void {
+  function saveYear() as Void {
+    Toybox.Application.Storage.setValue("lastYear", lastYear);
+    setDistanceAsMeters("totalDistanceLastYear", totalDistanceLastYear);
+
+    Toybox.Application.Storage.setValue("currentYear", currentYear);
+    setDistanceAsMeters("totalDistanceYear",
+                        totalDistanceYear + elapsedDistanceActivity);
+  }
+  function saveMonth() as Void {
+    Toybox.Application.Storage.setValue("currentMonth", currentMonth);
+    setDistanceAsMeters("totalDistanceLastMonth", totalDistanceLastMonth);
+    setDistanceAsMeters("totalDistanceMonth",
+                        totalDistanceMonth + elapsedDistanceActivity);
+  }
+  function saveWeek() as Void {
+    Toybox.Application.Storage.setValue("currentWeek", currentWeek);
+    setDistanceAsMeters("totalDistanceLastWeek", totalDistanceLastWeek);
+    setDistanceAsMeters("totalDistanceWeek",
+                        totalDistanceWeek + elapsedDistanceActivity);
+  }
+  function saveRide() as Void {
+    if (totalDistanceLastRide > 500.0) {
+      setDistanceAsMeters("totalDistanceLastRide", totalDistanceLastRide);
+    }
+    setDistanceAsMeters("totalDistanceRide", elapsedDistanceActivity);
+  }
+
+  hidden function setDistanceAsMeters(key as String,
+                                      distanceMeters as Float) as Void {
     Toybox.Application.Storage.setValue(key, distanceMeters);
   }
 
@@ -236,12 +278,11 @@ class Totals {
     totalDistanceRide = getDistanceAsMeters("totalDistanceRide");
 
     System.println(
-      Lang.format("load: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
-        rideStarted,
-        totalDistanceRide,
-        totalDistanceLastRide,
-      ])
-    );
+        Lang.format("load: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
+          rideStarted,
+          totalDistanceRide,
+          totalDistanceLastRide,
+        ]));
 
     if (processDate) {
       handleDate();
@@ -300,10 +341,8 @@ class Totals {
 
   hidden function handleDate() as Void {
     var today = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-    var dateChange = false;
-    if (currentYear == 0) {
-      dateChange = true;
 
+    if (currentYear == 0) {
       totalDistanceYear = 0.0f;
       currentYear = today.year;
 
@@ -317,32 +356,35 @@ class Totals {
 
       totalDistanceLastRide = 0.0f;
       totalDistanceRide = 0.0f;
+
+      save(true);
     }
 
     // year change
     if (currentYear != today.year) {
-      dateChange = true;
       totalDistanceLastYear = totalDistanceYear;
       lastYear = currentYear;
 
       totalDistanceYear = 0.0f;
       currentYear = today.year;
+      saveYear();
     }
+
     // month change
     var month = today.month as Number;
     if (currentMonth != month) {
-      dateChange = true;
       currentMonth = month;
       totalDistanceLastMonth = totalDistanceMonth;
       totalDistanceMonth = 0.0f;
+      saveMonth();
     }
     // week change
     var week = getWeekNumber(Time.now());
     if (currentWeek != week) {
-      dateChange = true;
       currentWeek = week;
       totalDistanceLastWeek = totalDistanceWeek;
       totalDistanceWeek = 0.0f;
+      saveWeek();
     }
 
     // ride started - via activity?
@@ -350,25 +392,21 @@ class Totals {
       // Only valid rides..
       if (totalDistanceRide > 500.0) {
         totalDistanceLastRide = totalDistanceRide;
-        dateChange = true;
       }
-      totalDistanceRide = 0.0f; // same as elapseddistance
+      totalDistanceRide = 0.0f;  // same as elapseddistance
       rideStarted = true;
-      System.println(
-        Lang.format("handledate: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
-          rideStarted,
-          totalDistanceRide,
-          totalDistanceLastRide,
-        ])
-      );
-    }
-
-    if (dateChange) {
-      save(true);
+      System.println(Lang.format(
+          "handledate: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
+            rideStarted,
+            totalDistanceRide,
+            totalDistanceLastRide,
+          ]));
+      saveRide();
     }
   }
 
-  hidden function setProperty(key as PropertyKeyType, value as PropertyValueType) as Void {
+  hidden function setProperty(key as PropertyKeyType,
+                              value as PropertyValueType) as Void {
     Application.Properties.setValue(key, value);
   }
 
@@ -376,11 +414,7 @@ class Totals {
     var day = Gregorian.info(time, Time.FORMAT_SHORT);
 
     var options = {
-      :year => day.year - 1,
-      :month => 12,
-      :day => 31,
-      :hour => 0,
-      :minute => 0,
+      :year => day.year - 1, :month => 12, :day => 31, :hour => 0, :minute => 0,
     };
     var firstDayOfYear = Gregorian.moment(options);
     var seconds = time.compare(firstDayOfYear);
@@ -389,8 +423,12 @@ class Totals {
 }
 
 class Total {
-  public var title as String = "";
-  public var abbreviated as String = "";
-  public var distance as Float = 0.0f;
-  public var distanceLast as Float = 0.0f;
+ public
+  var title as String = "";
+ public
+  var abbreviated as String = "";
+ public
+  var distance as Float = 0.0f;
+ public
+  var distanceLast as Float = 0.0f;
 }
