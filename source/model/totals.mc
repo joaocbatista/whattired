@@ -11,8 +11,9 @@ import Toybox.StringUtil;
 import Toybox.Attention;
 
 class Totals {
- private
-  var elapsedDistanceActivity as Float = 0.0f;
+ private var elapsedDistanceActivity as Float = 0.0f;
+ private var elapsedAscentActivity as Number = 0;
+ private var elapsedDescentActivity as Number = 0;
   // odo
  private
   var totalDistance as Float = 0.0f;
@@ -42,10 +43,12 @@ class Totals {
  private
   var totalDistanceWeek as Float = 0.0f;
 
-private
-  var totalDistanceLastTrack as Float = 0.0f;
- private
-  var totalDistanceTrack as Float = 0.0f;
+ private var totalDistanceLastTrack as Float = 0.0f;
+ private var totalDistanceTrack as Float = 0.0f;
+ private var totalAscentLastTrack as Number = 0;
+ private var totalAscentTrack as Number = 0;
+ private var totalDescentLastTrack as Number = 0;
+ private var totalDescentTrack as Number = 0;
 
  private
   var totalDistanceLastRide as Float = 0.0f;
@@ -89,6 +92,9 @@ private
     return totalDistanceWeek + elapsedDistanceActivity;
   }
  public function GetTotalDistanceTrack() as Float { return totalDistanceTrack + elapsedDistanceActivity; }
+ public function GetTotalAscentTrack() as Number { return totalAscentTrack + elapsedAscentActivity; }
+ public function GetTotalDescentTrack() as Number { return totalDescentTrack + elapsedDescentActivity; }
+
  public
   function GetTotalDistanceRide() as Float { return elapsedDistanceActivity; }
  public
@@ -97,12 +103,12 @@ private
   function GetTotalDistanceLastMonth() as Float {
     return totalDistanceLastMonth;
   }
- public
-  function GetTotalDistanceLastWeek() as Float { return totalDistanceLastWeek; }
- public
-  function GetTotalDistanceLastTrack() as Float { return totalDistanceLastTrack; }
- public
-  function GetTotalDistanceLastRide() as Float { return totalDistanceLastRide; }
+ public function GetTotalDistanceLastWeek() as Float { return totalDistanceLastWeek; }
+ public function GetTotalDistanceLastTrack() as Float { return totalDistanceLastTrack; }
+ public function GetTotalAscentLastTrack() as Number { return totalAscentLastTrack; }
+ public function GetTotalDescentLastTrack() as Number { return totalDescentLastTrack; }
+
+ public function GetTotalDistanceLastRide() as Float { return totalDistanceLastRide; }
  public
   function GetElapsedDistanceToDestination() as Float {
     return elapsedDistanceActivity - startDistanceCourse;
@@ -172,6 +178,21 @@ private
         elapsedDistanceActivity = info.elapsedDistance as Float;
       } else {
         elapsedDistanceActivity = 0.0f;
+      }
+    }
+
+    if (info has : totalAscent) {
+      if (info.totalAscent != null) {
+        elapsedAscentActivity = info.totalAscent as Number;
+      } else {
+        elapsedAscentActivity = 0;
+      }
+    }
+    if (info has : totalDescent) {
+      if (info.totalDescent != null) {
+        elapsedDescentActivity = info.totalDescent as Number;
+      } else {
+        elapsedDescentActivity = 0;
       }
     }
 
@@ -263,6 +284,11 @@ private
   function saveTrack() as Void {
     setDistanceAsMeters("totalDistanceLastTrack", totalDistanceLastTrack);    
     setDistanceAsMeters("totalDistanceTrack", totalDistanceTrack + elapsedDistanceActivity);
+
+    Storage.setValue("totalAscentLastTrack", totalAscentLastTrack);
+    Storage.setValue("totalAscentTrack", totalAscentTrack + elapsedAscentActivity);
+    Storage.setValue("totalDescentLastTrack", totalDescentLastTrack);
+    Storage.setValue("totalDescentTrack", totalDescentTrack + elapsedDescentActivity);     
   }
 
 
@@ -294,6 +320,11 @@ private
     totalDistanceLastTrack = getDistanceAsMeters("totalDistanceLastTrack");
     totalDistanceTrack = getDistanceAsMeters("totalDistanceTrack");
 
+    totalAscentLastTrack = $.getStorageValue("totalAscentLastTrack", 0) as Number;
+    totalAscentTrack = $.getStorageValue("totalAscentTrack", 0) as Number;
+    totalDescentLastTrack = $.getStorageValue("totalDescentLastTrack", 0) as Number;
+    totalDescentTrack = $.getStorageValue("totalDescentTrack", 0) as Number;
+
     totalDistanceLastRide = getDistanceAsMeters("totalDistanceLastRide");
     totalDistanceRide = getDistanceAsMeters("totalDistanceRide");
 
@@ -310,8 +341,10 @@ private
 
     totalDistanceFrontTyre = getDistanceAsMeters("totalDistanceFrontTyre");
     maxDistanceFrontTyre = getDistanceAsMeters("maxDistanceFrontTyre");
+    if (maxDistanceFrontTyre == 0.0f) { maxDistanceFrontTyre = 5000.0f; }
     totalDistanceBackTyre = getDistanceAsMeters("totalDistanceBackTyre");
     maxDistanceBackTyre = getDistanceAsMeters("maxDistanceBackTyre");
+    if (maxDistanceBackTyre == 0.0f) { maxDistanceBackTyre = 5000.0f; }
   }
 
   function triggerFrontBack() as Void {
@@ -353,9 +386,13 @@ private
     if (reset) {
       if (totalDistanceTrack > 0.0f) {
         totalDistanceLastTrack = totalDistanceTrack;
-        totalDistanceTrack = 0.0f;
-        saveTrack();
+        totalAscentLastTrack = totalAscentTrack;
+        totalDescentLastTrack = totalDescentTrack;
       }        
+        totalDistanceTrack = 0.0f;
+        totalAscentTrack = 0;
+        totalDescentTrack = 0;
+        saveTrack();
       Storage.setValue("reset_track", false);
     }
   }

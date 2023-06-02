@@ -7,7 +7,7 @@ var gShowValues as Boolean = true;
 var gShowColorsSmallField as Boolean = true;
 var gShowValuesSmallField as Boolean = false;
 var gShowCurrentProfile as Boolean = false;
-var gShowFocusSmallField as Types.EnumFocus = Types.FocusNothing;
+var gShowFocusSmallField as Types.EnumFocus = Types.FocusRide;
 
 var gShowOdo as Boolean = true;
 var gShowYear as Boolean = true;
@@ -66,7 +66,7 @@ class whattiredApp extends Application.AppBase {
       $.gShowColorsSmallField = $.getStorageValue("showColorsSmallField", true) as Boolean;
       $.gShowValuesSmallField = $.getStorageValue("showValuesSmallField", false) as Boolean;
 
-      $.gShowFocusSmallField = $.getStorageValue("showFocusSmallField", Types.FocusNothing) as Types.EnumFocus;
+      $.gShowFocusSmallField = $.getStorageValue("showFocusSmallField", gShowFocusSmallField) as Types.EnumFocus;
 
       $.gShowOdo = $.getStorageValue("showOdo", gShowOdo) as Boolean;
       $.gShowYear = $.getStorageValue("showYear", gShowYear) as Boolean;

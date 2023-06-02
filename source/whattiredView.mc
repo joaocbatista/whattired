@@ -38,6 +38,7 @@ class whattiredView extends WatchUi.DataField {
   var mShowColors as Boolean = true;
   var mFocus as Types.EnumFocus = Types.FocusNothing;
   var mSmallField as Boolean = false;
+  var mWideField as Boolean = false;
   var mShowFBCircles as Boolean = false;
 
   function initialize() {
@@ -63,6 +64,7 @@ class whattiredView extends WatchUi.DataField {
     mWidth = dc.getWidth();
     mShowFBCircles = false;
 
+    mWideField = mWidth > 200;
     if (mHeight <= 100) {
       mFontText = Graphics.FONT_XTINY;
       mShowValues = $.gShowValuesSmallField;
@@ -170,21 +172,7 @@ class whattiredView extends WatchUi.DataField {
         nothingHasFocus
       );
       line = line + 1;
-    }
-    if (mTotals.HasTrack() && focus != Types.FocusTrack) {
-      DrawDistanceLine(
-        dc,
-        line,
-        "Track",
-        "T",
-        mTotals.GetTotalDistanceTrack(),
-        mTotals.GetTotalDistanceLastTrack(),
-        mShowValues,
-        mShowColors,
-        nothingHasFocus
-      );
-      line = line + 1;
-    }
+    }   
     if (mTotals.HasRide() && focus != Types.FocusRide) {
       DrawDistanceLine(
         dc,
@@ -235,6 +223,45 @@ class whattiredView extends WatchUi.DataField {
         "Y",
         mTotals.GetTotalDistanceYear(),
         mTotals.GetTotalDistanceLastYear(),
+        mShowValues,
+        mShowColors,
+        nothingHasFocus
+      );
+      line = line + 1;
+    }
+    if (mTotals.HasTrack() && focus != Types.FocusTrack) {
+      DrawDistanceLine(
+        dc,
+        line,
+        "Track",
+        "T",
+        mTotals.GetTotalDistanceTrack(),
+        mTotals.GetTotalDistanceLastTrack(),
+        mShowValues,
+        mShowColors,
+        nothingHasFocus
+      );
+      line = line + 1;
+    
+      DrawAscentLine(
+        dc,
+        line,
+        "Asc",
+        "A",
+        mTotals.GetTotalAscentTrack(),
+        mTotals.GetTotalAscentLastTrack(),
+        mShowValues,
+        mShowColors,
+        nothingHasFocus
+      );
+      line = line + 1;
+      DrawAscentLine(
+        dc,
+        line,
+        "Desc",
+        "D",
+        mTotals.GetTotalDescentTrack(),
+        mTotals.GetTotalDescentLastTrack(),
         mShowValues,
         mShowColors,
         nothingHasFocus
@@ -340,6 +367,19 @@ class whattiredView extends WatchUi.DataField {
           true
         );
         break;
+      case Types.FocusTrack:
+        drawDistanceCircle(
+          dc,
+          "Track",
+          mTotals.GetTotalDistanceTrack(),
+          mTotals.GetTotalDistanceLastTrack(),
+          true,
+          true
+        );
+        if (mWideField and mSmallField) {
+          drawAscentDescent(dc, mTotals.GetTotalAscentTrack(), mTotals.GetTotalDescentTrack());                    
+        }
+        break;
       case Types.FocusCourse:
         if (mTotals.IsCourseActive()) {
           drawDistanceCircle(
@@ -397,6 +437,62 @@ class whattiredView extends WatchUi.DataField {
     var perc = -1;
     if (lastDistanceInMeters > 0) {
       perc = percentageOf(distanceInMeters, lastDistanceInMeters);
+      if (showColors) {
+        drawPercentageLine(dc, x, y + 1, mWidth - x - 1, perc, mLineHeight - 1, percentageToColor(perc));
+      }
+    }
+    if (showValues) {
+      if (perc > -1 && perc <= 20) {
+        dc.setColor(mColorValues20, Graphics.COLOR_TRANSPARENT);
+      } else {
+        dc.setColor(mColorValues, Graphics.COLOR_TRANSPARENT);
+      }
+      if (perc >= 130 && showColors) {
+        dc.setColor(mColorPerc100, Graphics.COLOR_TRANSPARENT);
+      }
+      dc.drawText(x, y, mFontText, formattedValue + " " + units, Graphics.TEXT_JUSTIFY_LEFT);
+      // draw perc right
+      if (perc > -1) {
+        if (perc >= 130 && showColors) {
+          dc.setColor(mColorPerc100, Graphics.COLOR_TRANSPARENT);
+        }
+        dc.drawText(mWidth - 1, y, mFontText, perc.format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
+      }
+    }
+  }
+
+  function DrawAscentLine(
+    dc as Dc,
+    line as Number,
+    label as String,
+    abbreviated as String,
+    valueInMeters as Number,
+    lastValueInMeters as Number,
+    showValues as Boolean,
+    showColors as Boolean,
+    nothingHasFocus as Boolean
+  ) as Void {
+    var x = 1;
+    var y = mLineHeight * line;
+
+    if (nothingHasFocus) {
+      dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
+      dc.drawText(x, y, mFontText, label, Graphics.TEXT_JUSTIFY_LEFT);
+      x = x + mLabelWidth;
+    } else {
+      dc.setColor(mColorTextNoFocus, Graphics.COLOR_TRANSPARENT);
+      dc.drawText(x, y, mFontText, abbreviated, Graphics.TEXT_JUSTIFY_LEFT);
+      x = x + mLabelWidthFocused;
+      showValues = false;
+      showColors = true;
+    }
+
+    var units = getDistanceInMeterOrFeetUnits(); 
+    var formattedValue = getDistanceInMeterOrFeet(valueInMeters).format("%d");
+
+    var perc = -1;
+    if (lastValueInMeters > 0) {
+      perc = percentageOf(valueInMeters, lastValueInMeters);
       if (showColors) {
         drawPercentageLine(dc, x, y + 1, mWidth - x - 1, perc, mLineHeight - 1, percentageToColor(perc));
       }
@@ -572,6 +668,17 @@ class whattiredView extends WatchUi.DataField {
     }
   }
 
+  function drawAscentDescent(dc as Dc, totalAscent as Number, totalDescent as Number) as Void {
+    var font = Graphics.FONT_SMALL;
+    var y = mHeight - dc.getFontHeight(font);
+
+    dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
+    dc.drawText(1, y, font, "A " + getDistanceInMeterOrFeet(totalAscent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
+     Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(mWidth, y, font, "D " + getDistanceInMeterOrFeet(totalDescent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
+     Graphics.TEXT_JUSTIFY_RIGHT);
+  }
+
   function drawDistanceCircle(
     dc as Dc,
     label as String,
@@ -626,6 +733,20 @@ class whattiredView extends WatchUi.DataField {
     return value;
   }
 
+  hidden function getDistanceInMeterOrFeet(distanceInMeters as Number) as Number {
+    var value = distanceInMeters;
+    if (mDevSettings.distanceUnits == System.UNIT_STATUTE) {
+      value = meterToFeet(value).toNumber();
+    }    
+    return value;
+  }
+  hidden function getDistanceInMeterOrFeetUnits() as String {
+    if (mDevSettings.distanceUnits == System.UNIT_STATUTE) {
+      return "f";
+    } else {
+      return "m";
+    }
+  }
   // @@ number only fonts doesnt contain spaces ..
   hidden function getNumberString(distanceInKmOrMiles as Float, distanceInMeters as Float) as String {
     var formatted = distanceInKmOrMiles.format(getFormatString(distanceInMeters));
