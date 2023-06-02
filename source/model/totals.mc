@@ -42,6 +42,11 @@ class Totals {
  private
   var totalDistanceWeek as Float = 0.0f;
 
+private
+  var totalDistanceLastTrack as Float = 0.0f;
+ private
+  var totalDistanceTrack as Float = 0.0f;
+
  private
   var totalDistanceLastRide as Float = 0.0f;
  private
@@ -83,6 +88,7 @@ class Totals {
   function GetTotalDistanceWeek() as Float {
     return totalDistanceWeek + elapsedDistanceActivity;
   }
+ public function GetTotalDistanceTrack() as Float { return totalDistanceTrack + elapsedDistanceActivity; }
  public
   function GetTotalDistanceRide() as Float { return elapsedDistanceActivity; }
  public
@@ -93,6 +99,8 @@ class Totals {
   }
  public
   function GetTotalDistanceLastWeek() as Float { return totalDistanceLastWeek; }
+ public
+  function GetTotalDistanceLastTrack() as Float { return totalDistanceLastTrack; }
  public
   function GetTotalDistanceLastRide() as Float { return totalDistanceLastRide; }
  public
@@ -145,6 +153,8 @@ class Totals {
   function HasWeek() as Boolean { return $.gShowWeek; }
  public
   function HasRide() as Boolean { return $.gShowRide; }
+ public
+  function HasTrack() as Boolean { return $.gShowTrack; } 
  public
   function HasFrontTyre() as Boolean {
     return $.gShowFront;  // && maxDistanceFrontTyre >= 1000;
@@ -200,6 +210,7 @@ class Totals {
       saveMonth();
       saveWeek();
       saveRide();
+      saveTrack();
 
       System.println(
           Lang.format("save: rideStarted [$1$] ride [$2$] last ride [$3$] ", [
@@ -249,6 +260,12 @@ class Totals {
     setDistanceAsMeters("totalDistanceRide", elapsedDistanceActivity);
   }
 
+  function saveTrack() as Void {
+    setDistanceAsMeters("totalDistanceLastTrack", totalDistanceLastTrack);    
+    setDistanceAsMeters("totalDistanceTrack", totalDistanceTrack + elapsedDistanceActivity);
+  }
+
+
   hidden function setDistanceAsMeters(key as String,
                                       distanceMeters as Float) as Void {
     Toybox.Application.Storage.setValue(key, distanceMeters);
@@ -273,6 +290,9 @@ class Totals {
     currentWeek = $.getStorageValue("currentWeek", 0) as Number;
     totalDistanceLastWeek = getDistanceAsMeters("totalDistanceLastWeek");
     totalDistanceWeek = getDistanceAsMeters("totalDistanceWeek");
+
+    totalDistanceLastTrack = getDistanceAsMeters("totalDistanceLastTrack");
+    totalDistanceTrack = getDistanceAsMeters("totalDistanceTrack");
 
     totalDistanceLastRide = getDistanceAsMeters("totalDistanceLastRide");
     totalDistanceRide = getDistanceAsMeters("totalDistanceRide");
@@ -328,6 +348,16 @@ class Totals {
       setDistanceAsMeters("totalDistanceFrontTyre", totalDistanceFrontTyre);
       setDistanceAsMeters("totalDistanceBackTyre", totalDistanceBackTyre);
     }
+
+    reset = $.getStorageValue("reset_track", false) as Boolean;
+    if (reset) {
+      if (totalDistanceTrack > 0.0f) {
+        totalDistanceLastTrack = totalDistanceTrack;
+        totalDistanceTrack = 0.0f;
+        saveTrack();
+      }        
+      Storage.setValue("reset_track", false);
+    }
   }
 
   hidden function getDistanceAsMeters(key as String) as Float {
@@ -353,6 +383,9 @@ class Totals {
       currentWeek = getWeekNumber(Time.now());
       totalDistanceLastWeek = 0.0f;
       totalDistanceWeek = 0.0f;
+
+      totalDistanceLastTrack = 0.0f;
+      totalDistanceTrack = 0.0f;
 
       totalDistanceLastRide = 0.0f;
       totalDistanceRide = 0.0f;

@@ -14,6 +14,7 @@ var gShowYear as Boolean = true;
 var gShowMonth as Boolean = true;
 var gShowWeek as Boolean = true;
 var gShowRide as Boolean = true;
+var gShowTrack as Boolean = true;
 var gShowFront as Boolean = true;
 var gShowBack as Boolean = true;
 var gNrOfDefaultFields as Number = 5;
@@ -67,13 +68,14 @@ class whattiredApp extends Application.AppBase {
 
       $.gShowFocusSmallField = $.getStorageValue("showFocusSmallField", Types.FocusNothing) as Types.EnumFocus;
 
-      $.gShowOdo = $.getStorageValue("showOdo", true) as Boolean;
-      $.gShowYear = $.getStorageValue("showYear", true) as Boolean;
-      $.gShowMonth = $.getStorageValue("showMonth", true) as Boolean;
-      $.gShowWeek = $.getStorageValue("showWeek", true) as Boolean;
-      $.gShowRide = $.getStorageValue("showRide", true) as Boolean;
-      $.gShowFront = $.getStorageValue("showFront", true) as Boolean;
-      $.gShowBack = $.getStorageValue("showBack", true) as Boolean;
+      $.gShowOdo = $.getStorageValue("showOdo", gShowOdo) as Boolean;
+      $.gShowYear = $.getStorageValue("showYear", gShowYear) as Boolean;
+      $.gShowMonth = $.getStorageValue("showMonth", gShowMonth) as Boolean;
+      $.gShowWeek = $.getStorageValue("showWeek", gShowWeek) as Boolean;
+      $.gShowRide = $.getStorageValue("showRide", gShowRide) as Boolean;
+      $.gShowTrack = $.getStorageValue("showTrack", gShowTrack) as Boolean;
+      $.gShowFront = $.getStorageValue("showFront", gShowFront) as Boolean;
+      $.gShowBack = $.getStorageValue("showBack", gShowBack) as Boolean;
 
       $.gNrOfDefaultFields = 0;
       if ($.gShowOdo) {
@@ -89,6 +91,9 @@ class whattiredApp extends Application.AppBase {
         $.gNrOfDefaultFields = $.gNrOfDefaultFields + 1;
       }
       if ($.gShowRide) {
+        $.gNrOfDefaultFields = $.gNrOfDefaultFields + 1;
+      }
+      if ($.gShowTrack) {
         $.gNrOfDefaultFields = $.gNrOfDefaultFields + 1;
       }
 

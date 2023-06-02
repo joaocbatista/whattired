@@ -171,6 +171,20 @@ class whattiredView extends WatchUi.DataField {
       );
       line = line + 1;
     }
+    if (mTotals.HasTrack() && focus != Types.FocusTrack) {
+      DrawDistanceLine(
+        dc,
+        line,
+        "Track",
+        "T",
+        mTotals.GetTotalDistanceTrack(),
+        mTotals.GetTotalDistanceLastTrack(),
+        mShowValues,
+        mShowColors,
+        nothingHasFocus
+      );
+      line = line + 1;
+    }
     if (mTotals.HasRide() && focus != Types.FocusRide) {
       DrawDistanceLine(
         dc,

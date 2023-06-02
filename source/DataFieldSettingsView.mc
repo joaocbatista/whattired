@@ -59,6 +59,9 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
     boolean = $.getStorageValue("switch_front_back", false) as Boolean;
     menu.addItem(new WatchUi.ToggleMenuItem("Front <-> back", null, "switch_front_back", boolean, null));
 
+    boolean =  $.getStorageValue("reset_track", false) as Boolean; 
+    menu.addItem(new WatchUi.ToggleMenuItem("Reset track", null, "reset_track", boolean, null));
+
     var mi = new WatchUi.MenuItem("Focus", null, "showFocusSmallField", null);
     mi.setSubLabel($.getFocusMenuSubLabel(mi.getId() as String));
     menu.addItem(mi);

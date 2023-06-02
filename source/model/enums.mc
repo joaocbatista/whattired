@@ -11,5 +11,6 @@ module Types {
     FocusFront = 6,
     FocusBack = 7,
     FocusCourse = 8,
+    FocusTrack = 9,
   }
 }

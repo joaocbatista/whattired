@@ -57,6 +57,11 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       distanceMenu.addItem(mi);
       distanceItems.add(mi.getId() as String);
 
+      mi = new WatchUi.MenuItem("Track", null, "totalDistanceTrack", null);
+      mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
+      distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
+
       // Not needed, is actual activity ride
       // @@ make readonly item
       // mi = new WatchUi.MenuItem("Ride", null, "totalDistanceRide", null);
@@ -94,6 +99,11 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       distanceMenu.addItem(mi);
       distanceItems.add(mi.getId() as String);
 
+      mi = new WatchUi.MenuItem("Last track", null, "totalDistanceLastTrack", null);
+      mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
+      distanceMenu.addItem(mi);
+      distanceItems.add(mi.getId() as String);
+
       mi = new WatchUi.MenuItem("Last ride", null, "totalDistanceLastRide", null);
       mi.setSubLabel($.getDistanceMenuSubLabel(mi.getId() as String));
       distanceMenu.addItem(mi);
@@ -125,6 +135,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       focusMenu.addItem(new WatchUi.MenuItem("Month", null, Types.FocusMonth, {}));
       focusMenu.addItem(new WatchUi.MenuItem("Week", null, Types.FocusWeek, {}));
       focusMenu.addItem(new WatchUi.MenuItem("Ride", null, Types.FocusRide, {}));
+      focusMenu.addItem(new WatchUi.MenuItem("Track", null, Types.FocusTrack, {}));
       focusMenu.addItem(new WatchUi.MenuItem("Front", null, Types.FocusFront, {}));
       focusMenu.addItem(new WatchUi.MenuItem("Back", null, Types.FocusBack, {}));
       focusMenu.addItem(new WatchUi.MenuItem("Course", null, Types.FocusCourse, {}));
@@ -144,6 +155,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       fieldsMenu.addItem(new WatchUi.ToggleMenuItem("Show week", null, "showWeek", boolean, null));
       boolean = $.getStorageValue("showRide", true) as Boolean;
       fieldsMenu.addItem(new WatchUi.ToggleMenuItem("Show ride", null, "showRide", boolean, null));
+      boolean = $.getStorageValue("showTrack", true) as Boolean;
+      fieldsMenu.addItem(new WatchUi.ToggleMenuItem("Show track", null, "showTrack", boolean, null));
       boolean = $.getStorageValue("showFront", true) as Boolean;
       fieldsMenu.addItem(new WatchUi.ToggleMenuItem("Show front tyre", null, "showFront", boolean, null));
       boolean = $.getStorageValue("showBack", true) as Boolean;
