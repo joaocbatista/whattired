@@ -670,13 +670,47 @@ class whattiredView extends WatchUi.DataField {
 
   function drawAscentDescent(dc as Dc, totalAscent as Number, totalDescent as Number) as Void {
     var font = Graphics.FONT_SMALL;
-    var y = mHeight - dc.getFontHeight(font);
+    var fh = dc.getFontHeight(font);
+    var w = fh / 2;
+    var y = mHeight - fh;
 
     dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(1, y, font, "A " + getDistanceInMeterOrFeet(totalAscent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
+
+    drawArrowUp(dc, 1, y, w, fh);
+
+    dc.drawText(1 + w, y, font, getDistanceInMeterOrFeet(totalAscent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
      Graphics.TEXT_JUSTIFY_LEFT);
-    dc.drawText(mWidth, y, font, "D " + getDistanceInMeterOrFeet(totalDescent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
+    drawArrowDown(dc, mWidth - w, y, w, fh);
+    dc.drawText(mWidth - w, y, font, getDistanceInMeterOrFeet(totalDescent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
      Graphics.TEXT_JUSTIFY_RIGHT);
+  }
+
+  function drawArrowUp(dc as Dc, x as Number, y as Number, width as Number, height as Number) as Void {
+    var xm = x + (width / 2);
+    var yd = (height / 3);
+    var ym = y + yd;
+
+    dc.fillPolygon(
+      [
+        [xm, y],
+        [x, ym],
+        [x + width, ym],        
+      ] as Array<Array<Number> >);
+    dc.fillRectangle(xm - 1, ym, 3, height - yd);
+  }
+
+  function drawArrowDown(dc as Dc, x as Number, y as Number, width as Number, height as Number) as Void {
+    var xm = x + width / 2;
+    var yd = (height / 3);
+    var ym = y + height - yd;
+
+    dc.fillRectangle(xm - 1, y, 3, height - yd);
+    dc.fillPolygon(
+      [
+        [x, ym],
+        [x + width, ym],        
+        [xm, y + height],
+      ] as Array<Array<Number> >);
   }
 
   function drawDistanceCircle(
