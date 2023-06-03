@@ -677,11 +677,11 @@ class whattiredView extends WatchUi.DataField {
     dc.setColor(mColor, Graphics.COLOR_TRANSPARENT);
 
     drawArrowUp(dc, 1, y, w, fh);
-
-    dc.drawText(1 + w, y, font, getDistanceInMeterOrFeet(totalAscent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
+    dc.drawText(1 + w + 1, y, font, getDistanceInMeterOrFeet(totalAscent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
      Graphics.TEXT_JUSTIFY_LEFT);
+
     drawArrowDown(dc, mWidth - w, y, w, fh);
-    dc.drawText(mWidth - w, y, font, getDistanceInMeterOrFeet(totalDescent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
+    dc.drawText(mWidth - w - 1, y, font, getDistanceInMeterOrFeet(totalDescent).format("%0d") + " " + getDistanceInMeterOrFeetUnits(),
      Graphics.TEXT_JUSTIFY_RIGHT);
   }
 
