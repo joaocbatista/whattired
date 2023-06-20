@@ -56,7 +56,7 @@ class Totals {
     return totalDistanceMonth + elapsedDistanceActivity;
   }
   public function GetTotalDistanceWeek() as Float {
-    return totalDistanceWeek + elapsedDistanceActivity;
+        return totalDistanceWeek + elapsedDistanceActivity;
   }
   public function GetTotalDistanceRide() as Float {
     return elapsedDistanceActivity;
@@ -304,7 +304,8 @@ class Totals {
       totalDistanceLastMonth = 0.0f;
       totalDistanceMonth = 0.0f;
 
-      currentWeek = getWeekNumber(Time.now());
+      currentWeek = iso_week_number(today.year, today.month, today.day);
+      // currentWeek = getWeekNumber(Time.now());
       totalDistanceLastWeek = 0.0f;
       totalDistanceWeek = 0.0f;
 
@@ -330,7 +331,8 @@ class Totals {
       totalDistanceMonth = 0.0f;
     }
     // week change
-    var week = getWeekNumber(Time.now());
+    var week = iso_week_number(today.year, today.month, today.day);
+    // var week = getWeekNumber(Time.now());
     if (currentWeek != week) {
       dateChange = true;
       currentWeek = week;
@@ -366,20 +368,82 @@ class Totals {
     Application.Properties.setValue(key, value);
   }
 
-  hidden function getWeekNumber(time as Time.Moment) as Number {
-    var day = Gregorian.info(time, Time.FORMAT_SHORT);
 
-    var options = {
-      :year => day.year - 1,
-      :month => 12,
-      :day => 31,
-      :hour => 0,
-      :minute => 0,
-    };
-    var firstDayOfYear = Gregorian.moment(options);
-    var seconds = time.compare(firstDayOfYear);
-    return (Math.round(seconds / (86400 * 7)) + 1) as Number;
+  function julian_day(year, month, day)
+  {
+    var a = (14 - month) / 12;
+    var y = (year + 4800 - a);
+    var m = (month + 12 * a - 3);
+    return day + ((153 * m + 2) / 5) + (365 * y) + (y / 4) - (y / 100) + (y / 400) - 32045;
   }
+
+  function is_leap_year(year)
+  {
+    if (year % 4 != 0) {
+    return false;
+  }
+    else if (year % 100 != 0) {
+    return true;
+  }
+    else if (year % 400 == 0) {
+    return true;
+  }
+
+    return false;
+  }
+
+  function iso_week_number(year, month, day)
+  {
+    var first_day_of_year = julian_day(year, 1, 1);
+    var given_day_of_year = julian_day(year, month, day);
+
+    var day_of_week = (first_day_of_year + 3) % 7; // days past thursday
+    var week_of_year = (given_day_of_year - first_day_of_year + day_of_week + 4) / 7;
+
+    // week is at end of this year or the beginning of next year
+    if (week_of_year == 53) {
+
+      if (day_of_week == 6) {
+        return week_of_year;
+      }
+      else if (day_of_week == 5 && is_leap_year(year)) {
+        return week_of_year;
+      }
+      else {
+        return 1;
+      }
+    }
+
+    // week is in previous year, try again under that year
+    else if (week_of_year == 0) {
+      first_day_of_year = julian_day(year - 1, 1, 1);
+
+      day_of_week = (first_day_of_year + 3) % 7;
+
+      return (given_day_of_year - first_day_of_year + day_of_week + 4) / 7;
+    }
+
+    // any old week of the year
+    else {
+      return week_of_year;
+    }
+  }
+
+
+  // hidden function getWeekNumber(time as Time.Moment) as Number {
+  //   var day = Gregorian.info(time, Time.FORMAT_SHORT);
+
+  //   var options = {
+  //     :year => day.year - 1,
+  //     :month => 12,
+  //     :day => 31,
+  //     :hour => 0,
+  //     :minute => 0,
+  //   };
+  //   var firstDayOfYear = Gregorian.moment(options);
+  //   var seconds = time.compare(firstDayOfYear);
+  //   return (Math.round(seconds / (86400 * 7)) + 1) as Number;
+  // }
 }
 
 class Total {
