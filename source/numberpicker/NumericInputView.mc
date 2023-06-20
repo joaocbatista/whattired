@@ -357,6 +357,7 @@ class NumericInputView extends WatchUi.View {
   // }
 
   public function getKeyPressed(coord as Lang.Array<Lang.Number>) as String {
+    var idxCtrl = 0;
     try {
       var x = coord[0] as Number;
       var y = coord[1] as Number;
@@ -371,7 +372,7 @@ class NumericInputView extends WatchUi.View {
           return _keys[idxKey];
         }
       }
-      for (var idxCtrl = 0; idxCtrl < _controlCoord.size(); idxCtrl++) {
+      for (idxCtrl = 0; idxCtrl < _controlCoord.size(); idxCtrl++) {
         var range = _controlCoord[idxCtrl] as Lang.Array<Lang.Number>;
         if (
           (range[0] as Number) < x &&
